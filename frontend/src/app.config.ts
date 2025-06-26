@@ -7,6 +7,7 @@ import { appRoutes } from './app.routes';
 import { SVSTheme } from './app/themes/svs-theme';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { AuthInterceptor } from './app/auth/components/login/interceptors/auth.interceptor';
+import {CorsInterceptor} from "./app/core/interceptors/cors.interceptor";
 
 export const appConfig: ApplicationConfig = {
     providers: [
@@ -27,6 +28,12 @@ export const appConfig: ApplicationConfig = {
         {
             provide: HTTP_INTERCEPTORS,
             useClass: AuthInterceptor,
+            multi: true
+        },
+
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: CorsInterceptor,
             multi: true
         },
 
