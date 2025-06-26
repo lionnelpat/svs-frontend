@@ -1,0 +1,20 @@
+# Node
+node_modules/
+npm-debug.log
+
+# Docker volumes (si tu les montes en local)
+certbot/
+acme.sh/
+nginx/certs/
+nginx/vhost.d/
+nginx/html/
+
+# Logs
+*.log
+
+# Env files
+.env
+
+# IDE
+.vscode/
+.idea/

@@ -1,0 +1,168 @@
+<div class="role-pages">
+    <p-toast></p-toast>
+    <p-confirmDialog></p-confirmDialog>
+
+    <!-- Header avec titre et bouton d'ajout -->
+    <div class="card">
+
+
+        <div class="card mb-5">
+            <!-- Barre de recherche et filtres -->
+            <div class="search-filters mb-4">
+                <div class="flex flex-column md:flex-row gap-3 mb-4">
+                    <div class="flex-1">
+                        <p-iconfield iconPosition="left">
+                            <input pInputText type="text" [(ngModel)]="searchTerm"
+                                   (input)="onSearch()"
+                                   placeholder="Rechercher par nom ou description..."
+                                   class="w-full" />
+                            <p-inputicon class="pi pi-search" />
+                        </p-iconfield>
+                    </div>
+
+                    <div class="flex-2">
+                        <p-dropdown
+                            [options]="statusOptions"
+                            [(ngModel)]="selectedStatus"
+                            placeholder="Filtrer par statut"
+                            optionLabel="label"
+                            optionValue="value"
+                            [showClear]="true"
+                            (onChange)="onFilter()"
+                            class="w-full"
+                        ></p-dropdown>
+                    </div>
+
+                    <div class="flex-3">
+                        <button
+                            pButton
+                            label="Réinitialiser"
+                            icon="pi pi-times"
+                            class="p-button-outlined w-full"
+                            (click)="clearFilters()"
+                        ></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tableau des rôles -->
+        <p-table
+            [value]="roles"
+            [loading]="loading"
+            [paginator]="false"
+            responsiveLayout="scroll"
+            styleClass="p-datatable-gridlines"
+            [tableStyle]="{'min-width': '60rem'}"
+        >
+            <ng-template pTemplate="header">
+                <tr>
+                    <th style="width: 5rem" id="id">ID</th>
+                    <th pSortableColumn="name" id="name">
+                        Nom <p-sortIcon field="name"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="displayName" id="displayName">
+                        Nom d'affichage <p-sortIcon field="displayName"></p-sortIcon>
+                    </th>
+                    <th id="description">Description</th>
+                    <th style="width: 8rem" id="utilisateurs">Utilisateurs</th>
+                    <th style="width: 8rem" pSortableColumn="isActive" id="isActive">
+                        Statut <p-sortIcon field="isActive"></p-sortIcon>
+                    </th>
+                    <th style="width: 10rem" pSortableColumn="createdAt" id="createdAt">
+                        Créé le <p-sortIcon field="createdAt"></p-sortIcon>
+                    </th>
+                    <th style="width: 12rem" id="actions" >Actions</th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-role>
+                <tr>
+                    <td>{{ role.id }}</td>
+                    <td>
+                        <span class="font-medium">{{ role.name }}</span>
+                    </td>
+                    <td>{{ role.displayName }}</td>
+                    <td>
+                <span [title]="role.description">
+                  {{ role.description | slice:0:60 }}{{ role.description.length > 60 ? '...' : '' }}
+                </span>
+                    </td>
+                    <td class="text-center">
+                        <p-tag
+                            [value]="role.userCount.toString()"
+                            [severity]="role.userCount > 0 ? 'info' : 'secondary'"
+                        ></p-tag>
+                    </td>
+                    <td>
+                        <p-tag
+                            [value]="role.isActive ? 'Actif' : 'Inactif'"
+                            [severity]="role.isActive ? 'success' : 'danger'"
+                        ></p-tag>
+                    </td>
+                    <td>{{ role.createdAt  | date:'dd/MM/yyyy' }}</td>
+                    <td>
+                        <div class="flex gap-2">
+                            <button
+                                pButton
+                                icon="pi pi-pencil"
+                                class="p-button-text p-button-rounded p-button-warning"
+                                pTooltip="Modifier"
+                                (click)="onEdit(role)"
+                            ></button>
+
+                            <button
+                                pButton
+                                [icon]="role.isActive ? 'pi pi-eye-slash' : 'pi pi-eye'"
+                                [class]="role.isActive ? 'p-button-text p-button-rounded p-button-secondary' : 'p-button-text p-button-rounded p-button-success'"
+                                [pTooltip]="role.isActive ? 'Désactiver' : 'Activer'"
+                                (click)="onToggleStatus(role)"
+                            ></button>
+
+                            <button
+                                pButton
+                                icon="pi pi-trash"
+                                class="p-button-text p-button-rounded p-button-danger"
+                                pTooltip="Supprimer"
+                                [disabled]="role.userCount > 0"
+                                (click)="onDelete(role)"
+                            ></button>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="7" class="text-center">
+                        <div class="empty-state">
+                            <i class="pi pi-info-circle empty-icon"></i>
+                            <h4>Aucun role trouvé</h4>
+                            <p>{{ getEmptyMessage() }}</p>
+                            <button
+                                *ngIf="hasActiveFilters()"
+                                pButton
+                                type="button"
+                                label="Effacer les filtres"
+                                icon="pi pi-filter-slash"
+                                class="p-button-text"
+                                (click)="clearFilters()"
+                            ></button>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+
+        <!-- Pagination -->
+        <p-paginator
+            [rows]="pageSize"
+            [totalRecords]="totalRecords"
+            [first]="currentPage * pageSize"
+            (onPageChange)="onPageChange($event)"
+            [showCurrentPageReport]="true"
+            currentPageReportTemplate="Affichage de {first} à {last} sur {totalRecords} rôles"
+            class="mt-3"
+        ></p-paginator>
+    </div>
+</div>

@@ -1,0 +1,89 @@
+<form [formGroup]="roleForm" (ngSubmit)="onSubmit()" class="role-form">
+    <!-- Informations générales -->
+    <div class="form-section">
+        <h4 class="section-title">
+            <i class="pi pi-send mr-2"></i>
+            Informations générales
+        </h4>
+
+        <div class="grid">
+            <div class="col-12 md:col-6">
+                <label for="name" class="field-label">
+                    Nom du Role <span class="required">*</span>
+                </label>
+                <input
+                    id="name"
+                    pInputText
+                    formControlName="name"
+                    placeholder="Ex: ADMIN"
+                    class="w-full"
+                    [class.ng-invalid]="isFieldInvalid('name')"
+                />
+                <small class="field-error" *ngIf="isFieldInvalid('name')">
+                    Le nom du role est obligatoire
+                </small>
+            </div>
+            <div class="col-12 md:col-6">
+                <label for="displayName" class="field-label">
+                    Nom d'affichage du Role <span class="required">*</span>
+                </label>
+                <input
+                    id="displayName"
+                    pInputText
+                    formControlName="displayName"
+                    placeholder="Ex: Administrateur"
+                    class="w-full"
+                    [class.ng-invalid]="isFieldInvalid('displayName')"
+                />
+                <small class="field-error" *ngIf="isFieldInvalid('displayName')">
+                    Le nom d'affichage du role est obligatoire
+                </small>
+            </div>
+
+            <div class="col-12 md:col-6">
+                <label for="description" class="field-label">Description</label>
+                <textarea
+                    id="description"
+                    pInputTextarea
+                    formControlName="description"
+                    placeholder="Description détaillée de la dépense..."
+                    rows="3"
+                    [maxlength]="MAX_DESCRIPTION_LENGTH"
+                    [class.p-invalid]="isFieldInvalid('description')"
+                    class="w-full">
+                        </textarea>
+                <div class="flex justify-content-between mt-1">
+                    <small class="field-error" *ngIf="isFieldInvalid('description')">
+                        {{ getFieldError('description') }}
+                    </small>
+                    <small class="text-color-secondary">
+                        {{ roleForm.get('description')?.value || 0 }}/{{ MAX_DESCRIPTION_LENGTH }}
+                    </small>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="form-actions mt-3 flex flex-row justify-end">
+        <button
+            type="button"
+            pButton
+            label="Annuler"
+            icon="pi pi-times"
+            class="p-button-text"
+            (click)="onCancel()"
+        ></button>
+        <button
+            type="submit"
+            pButton
+            [label]="isEditMode ? 'Modifier' : 'Créer'"
+            [icon]="isEditMode ? 'pi pi-check' : 'pi pi-plus'"
+            [loading]="loading"
+            [disabled]="roleForm.invalid"
+            class="ml-2"
+            style="background-color: var(--svs-primary); border-color: var(--svs-primary)"
+        ></button>
+    </div>
+</form>

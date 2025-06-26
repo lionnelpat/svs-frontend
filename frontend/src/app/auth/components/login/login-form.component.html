@@ -1,0 +1,79 @@
+
+<div class="login-container">
+    <p-toast></p-toast>
+
+    <div class="login-card">
+        <div class="icon-wrapper">
+            <img ngSrc="assets/images/logo.jpeg" class="logo" alt="logo svs" height="374" width="329">
+        </div>
+
+        <h2 class="title">SVS Platform</h2>
+        <p class="subtitle">Connectez-vous à votre espace de gestion</p>
+
+        <!-- Message d'erreur global -->
+        @if (errorMessage()) {
+            <p-message severity="error" [text]="errorMessage()" class="w-full mb-3"></p-message>
+        }
+
+        <form [formGroup]="form" (ngSubmit)="login()">
+            <div class="field mb-3">
+                <label for="username">Username *</label>
+                <input
+                    pInputText
+                    id="username"
+                    type="text"
+                    formControlName="username"
+                    class="w-full"
+                    [class.ng-invalid]="isFieldInvalid('username')"
+                    placeholder="Saisissez votre username"
+                />
+                @if (isFieldInvalid('username')) {
+                    <small class="p-error">{{ getFieldError('username') }}</small>
+                }
+            </div>
+
+            <div class="field mb-3">
+                <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Password</label>
+                <p-password
+                    id="password1"
+                    formControlName="password"
+                    placeholder="Password"
+                    [toggleMask]="true"
+                    styleClass="mb-4"
+                    [fluid]="true"
+                    [feedback]="false">
+
+                </p-password>
+                @if (isFieldInvalid('password')) {
+                    <small class="p-error">{{ getFieldError('password') }}</small>
+                }
+
+            </div>
+
+            <button
+                pButton
+                type="submit"
+                label="Se connecter"
+                icon="pi pi-sign-in"
+                class="login-button w-full"
+                [loading]="isLoading()"
+                [disabled]="isLoading()"
+            ></button>
+        </form>
+
+        <!-- Informations de connexion pour le développement -->
+        <div class="dev-info mt-4 p-3 border-round" style="background: var(--surface-50); border: 1px solid var(--surface-200);">
+            <h6 class="m-0 mb-2 text-600">Informations de test :</h6>
+            <p class="m-0 text-sm text-600">
+                <strong>username :</strong> admin<br>
+                <strong>Mot de passe :</strong> Admin123!
+            </p>
+        </div>
+
+        <div class="footer-text mt-4">
+            <p class="text-center text-sm text-600">
+                © 2025 SVS Platform - Gestion Maritime
+            </p>
+        </div>
+    </div>
+</div>
