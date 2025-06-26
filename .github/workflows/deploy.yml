@@ -21,4 +21,5 @@ jobs:
           key: ${{ secrets.SVS_DEPLOY_KEY }}
           port: 22
           script: |
+            cd /opt/svs-front-deploy
             ./deploy-frontend.sh
