@@ -1,7 +1,7 @@
 // src/environments/environment.prod.ts
 export const environment = {
     production: true,
-    apiBaseUrl: 'http://localhost:8081/api/v1', // URL de production
+    apiBaseUrl: 'https://svs-api-backend.model-technologie.com/api/v1', // URL de production
     apiVersion: 'v1',
 
     // Configuration pour les requêtes HTTP
