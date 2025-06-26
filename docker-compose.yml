@@ -30,9 +30,9 @@ services:
     networks:
       - web
 
-  letsencrypt:
+  nginx-letsencrypt:
     image: nginxproxy/acme-companion
-    container_name: nginx-proxy-letsencrypt
+    container_name: nginx-letsencrypt
     restart: unless-stopped
     environment:
       DEFAULT_EMAIL: "business.modeltech@gmail.com"
@@ -42,6 +42,8 @@ services:
       - vhost:/etc/nginx/vhost.d
       - html:/usr/share/nginx/html
       - acme:/etc/acme.sh
+    depends_on:
+      - nginx-proxy
     networks:
       - web
 
