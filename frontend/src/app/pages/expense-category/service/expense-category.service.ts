@@ -19,7 +19,7 @@ import { ErrorHandlerService } from '../../../core/services/error-handler.servic
     providedIn: 'root'
 })
 export class ExpenseCategoryService {
-    private readonly baseUrl = `${environment.apiBaseUrl}/${environment.apiVersion}/expense-categories`;
+    private readonly baseUrl = `${environment.apiBaseUrl}/expense-categories`;
 
     // State management
     private readonly categoriesSubject = new BehaviorSubject<ExpenseCategory[]>([]);

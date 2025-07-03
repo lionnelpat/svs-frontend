@@ -19,7 +19,7 @@ import {
     providedIn: 'root'
 })
 export class PaymentMethodService {
-    private readonly baseUrl = `${environment.apiBaseUrl}/${environment.apiVersion}/payment-methods`;
+    private readonly baseUrl = `${environment.apiBaseUrl}/payment-methods`;
 
     constructor(private http: HttpClient,
                 private readonly logger: LoggerService,

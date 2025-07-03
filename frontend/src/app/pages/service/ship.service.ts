@@ -19,7 +19,7 @@ import { environment } from '../../../environments/environment';
     providedIn: 'root'
 })
 export class ShipService {
-    private readonly apiBaseUrl = `${environment.apiBaseUrl}/${environment.apiVersion}/ships`;
+    private readonly apiBaseUrl = `${environment.apiBaseUrl}/ships`;
 
     constructor(
         private readonly http: HttpClient,

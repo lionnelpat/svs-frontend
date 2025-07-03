@@ -20,7 +20,7 @@ import { ErrorHandlerService } from '../../../core/services/error-handler.servic
     providedIn: 'root'
 })
 export class RoleService {
-    private readonly apiBaseUrl = `${environment.apiBaseUrl}/${environment.apiVersion}/admin/roles`;
+    private readonly apiBaseUrl = `${environment.apiBaseUrl}/admin/roles`;
 
     constructor(
         private readonly http: HttpClient,

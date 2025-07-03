@@ -2,7 +2,6 @@
 export const environment = {
     production: true,
     apiBaseUrl: 'https://svs-api-backend.model-technologie.com/api/v1', // URL de production
-    apiVersion: 'v1',
 
     // Configuration pour les requêtes HTTP
     httpTimeout: 30000,

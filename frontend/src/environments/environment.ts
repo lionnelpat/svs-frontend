@@ -1,8 +1,7 @@
 // src/environments/environment.ts
 export const environment = {
     production: false,
-    apiBaseUrl: 'http://localhost:8081/api/v1i', // Ajustez selon votre configuration backend
-    apiVersion: 'v1',
+    apiBaseUrl: 'http://localhost:8081/api/v1', // Ajustez selon votre configuration backend
 
     // Configuration pour les requêtes HTTP
     httpTimeout: 30000, // 30 secondes

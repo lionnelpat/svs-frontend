@@ -20,7 +20,7 @@ import { ApiResponse } from '../../core/interfaces/api-response.interface';
     providedIn: 'root'
 })
 export class OperationService {
-    private readonly apiUrl = `${environment.apiBaseUrl}/${environment.apiVersion}/operations`;
+    private readonly apiUrl = `${environment.apiBaseUrl}/operations`;
     private readonly DEFAULT_EXCHANGE_RATE = 656;
 
     constructor(

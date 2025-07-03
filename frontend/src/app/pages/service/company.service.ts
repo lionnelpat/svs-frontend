@@ -19,7 +19,7 @@ import { environment } from '../../../environments/environment';
 })
 export class CompanyService {
     // private readonly baseUrl = 'companies';
-    private readonly apiBaseUrl = `${environment.apiBaseUrl}/`;
+    private readonly apiBaseUrl = `${environment.apiBaseUrl}/companies`;
 
     private readonly  headers = new HttpHeaders({
         'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ export class CompanyService {
             params = params.set('active', filter.active.toString());
         }
 
-        return this.http.get<any>(`${this.apiBaseUrl}/companies`, {
+        return this.http.get<any>(`${this.apiBaseUrl}`, {
             headers: this.headers,
             params
         }).pipe(

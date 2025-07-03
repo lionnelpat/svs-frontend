@@ -19,7 +19,7 @@ import {
     providedIn: 'root'
 })
 export class ExpenseSupplierService {
-    private readonly baseUrl = `${environment.apiBaseUrl}/${environment.apiVersion}/expense-suppliers`;
+    private readonly baseUrl = `${environment.apiBaseUrl}/expense-suppliers`;
 
     constructor(private http: HttpClient,
                 private readonly logger: LoggerService,

@@ -2,7 +2,6 @@
 export const environment = {
     production: true,
     apiBaseUrl: 'https://svs-api-backend.model-technologie.com/api/v1',  // Important: correspond au proxy Nginx
-    apiVersion: 'v1',
 
     // Configuration spécifique staging
     enableDebug: true,
