@@ -37,6 +37,6 @@ export class RoleGuard implements CanActivate {
         }
 
         // Rediriger vers une page d'accès refusé ou le dashboard
-        return this.router.createUrlTree(['/dashboard']);
+        return this.router.createUrlTree(['/unauthorized']);
     }
 }

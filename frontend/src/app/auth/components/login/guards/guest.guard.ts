@@ -19,6 +19,6 @@ export class GuestGuard implements CanActivate {
         }
 
         // Si déjà connecté, rediriger vers le dashboard
-        return this.router.createUrlTree(['/dashboard']);
+        return this.router.createUrlTree(['/unauthorized'], {});
     }
 }

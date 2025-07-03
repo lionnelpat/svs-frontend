@@ -10,6 +10,7 @@ import { GuestGuard } from './app/auth/components/login/guards/guest.guard';
 import { AuthGuard } from './app/auth/components/login/guards/auth.guard';
 import { RolesComponent } from './app/pages/roles/roles.component';
 import { RoleGuard } from './app/auth/components/login/guards/role.guard';
+import {UnauthorizedComponent} from "./app/pages/unauthorized/unauthorized";
 
 export const appRoutes: Routes = [
     {
@@ -76,10 +77,10 @@ export const appRoutes: Routes = [
             {
                 path: 'roles',
                 component: RolesComponent,
-                canActivate: [RoleGuard], // Optionnel: protection par rôle
+                canActivate: [], // Optionnel: protection par rôle
                 data: {
                     breadcrumb: 'Gestion des Rôles',
-                    roles: [ ] // Rôles autorisés
+                    roles: [''] // Rôles autorisés
                 }
             },
 
@@ -89,6 +90,10 @@ export const appRoutes: Routes = [
     {
         path: 'notfound',
         component: Notfound
+    },
+    {
+        path: 'unauthorized',
+        component: UnauthorizedComponent
     },
 
     // Redirection par défaut vers la page de connexion
