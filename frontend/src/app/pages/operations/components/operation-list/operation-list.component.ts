@@ -16,6 +16,8 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { OPERATION_KEY } from '../../constants/constant';
+import {Toast} from "primeng/toast";
+import {PAYMENT_METHOD_KEY} from "../../../payment-methods/constants/constants";
 
 export interface OperationListEvent {
     type: 'edit' | 'view' | 'delete';
@@ -36,7 +38,8 @@ export interface OperationListEvent {
         ConfirmDialogModule,
         TooltipModule,
         IconField,
-        InputIcon
+        InputIcon,
+        Toast
     ],
     templateUrl: './operation-list.component.html',
     styleUrls: ['./operation-list.component.scss']
@@ -250,4 +253,5 @@ export class OperationListComponent implements OnInit {
     }
 
     protected readonly OPERATION_KEY = OPERATION_KEY;
+    protected readonly PAYMENT_METHOD_KEY = PAYMENT_METHOD_KEY;
 }

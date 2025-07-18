@@ -96,7 +96,7 @@ export class OperationService {
     }
 
     toggleOperationStatus(id: number): Observable<Operation> {
-        return this.http.patch<ApiResponse<Operation>>(`${this.apiUrl}/${id}/toggle-status`, {}).pipe(
+        return this.http.patch<ApiResponse<Operation>>(`${this.apiUrl}/${id}/toggle-active`, {}).pipe(
             map(resp => resp.data),
             catchError(err => this.handleError(err, `Toggle statut opération ID: ${id}`))
         );
