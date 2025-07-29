@@ -1,7 +1,7 @@
 // src/environments/environment.ts
 export const environment = {
     production: true,
-    apiBaseUrl: 'https://svs-api-backend.model-technologie.com/api/v1',  // Important: correspond au proxy Nginx
+    apiBaseUrl: 'https://svs-api-backend.salanevision.com/api/v1',  // Important: correspond au proxy Nginx
 
     // Configuration spécifique staging
     enableDebug: true,
