@@ -3,14 +3,14 @@
     <!-- Informations générales -->
     <div class="form-section">
         <h5 class="section-title">
-            <i class="pi pi-cog mr-2"></i>
+            <i class="pi pi-credit-card mr-2"></i>
             Informations générales
         </h5>
 
         <div class="grid">
-            <div class="col-12 md:col-6 mb-3 ">
+            <div class="col-12 md:col-6 mb-3">
                 <label for="nom" class="field-label">
-                    Nom : <span class="required">*</span>
+                    Nom <span class="required">*</span>
                 </label>
                 <input
                     id="nom"
@@ -20,6 +20,12 @@
                     class="w-full"
                     [class.ng-invalid]="isFieldInvalid('nom')"
                 />
+                <small class="field-error" *ngIf="isFieldInvalid('nom') && paymentMethodForm.get('nom')?.hasError('required')">
+                    Le nom est obligatoire
+                </small>
+                <small class="field-error" *ngIf="isFieldInvalid('nom') && paymentMethodForm.get('nom')?.hasError('minlength')">
+                    Le nom doit contenir au moins 2 caractères
+                </small>
                 <small class="field-error" *ngIf="paymentMethodForm.get('nom')?.hasError('serverError')">
                     {{ paymentMethodForm.get('nom')?.getError('serverError') }}
                 </small>
@@ -37,6 +43,12 @@
                     class="w-full"
                     [class.ng-invalid]="isFieldInvalid('code')"
                 />
+                <small class="field-error" *ngIf="isFieldInvalid('code') && paymentMethodForm.get('code')?.hasError('required')">
+                    Le code est obligatoire
+                </small>
+                <small class="field-error" *ngIf="isFieldInvalid('code') && paymentMethodForm.get('code')?.hasError('minlength')">
+                    Le code doit contenir au moins 2 caractères
+                </small>
                 <small class="field-error" *ngIf="paymentMethodForm.get('code')?.hasError('serverError')">
                     {{ paymentMethodForm.get('code')?.getError('serverError') }}
                 </small>
@@ -44,13 +56,13 @@
 
             <div class="col-12 mb-3">
                 <label for="description" class="field-label">
-                    Description <span class="required">*</span>
+                    Description
                 </label>
                 <textarea
                     id="description"
                     pInputTextarea
                     formControlName="description"
-                    placeholder="description  ..."
+                    placeholder="Description de la méthode de paiement..."
                     class="w-full"
                     rows="3"
                     [class.ng-invalid]="isFieldInvalid('description')"
@@ -59,7 +71,6 @@
                     {{ paymentMethodForm.get('description')?.getError('serverError') }}
                 </small>
             </div>
-
         </div>
 
         <p-divider></p-divider>
@@ -73,6 +84,7 @@
                 icon="pi pi-times"
                 class="p-button-text"
                 (click)="onCancel()"
+                [disabled]="loading"
             ></button>
             <button
                 type="submit"
@@ -80,7 +92,7 @@
                 [label]="isEditMode ? 'Modifier' : 'Créer'"
                 [icon]="isEditMode ? 'pi pi-check' : 'pi pi-plus'"
                 [loading]="loading"
-                [disabled]="paymentMethodForm.invalid"
+                [disabled]="paymentMethodForm.invalid || loading"
                 class="ml-2"
                 style="background-color: var(--svs-primary); border-color: var(--svs-primary)"
             ></button>
@@ -88,5 +100,4 @@
     </div>
 </form>
 
-<!-- Messages toast -->
-<p-toast key="{{PAYMENT_METHOD_KEY}}"></p-toast>
+<!-- Toast supprimé du composant enfant - géré par le parent -->

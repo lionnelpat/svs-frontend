@@ -10,7 +10,6 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { Textarea } from 'primeng/textarea';
 import { getErrorMessage } from '../../../../core/utilities/error';
 import { FormErrorUtils } from '../../../../core/utilities/form-error.utils';
-import { Toast } from 'primeng/toast';
 import { PaymentMethod, PaymentMethodCreate } from '../../interfaces/payment-method.interface';
 import { PaymentMethodService } from '../../service/payment-method.service';
 import { PAYMENT_METHOD_KEY } from '../../constants/constants';
@@ -25,8 +24,7 @@ import { PAYMENT_METHOD_KEY } from '../../constants/constants';
         InputTextModule,
         DropdownModule,
         DividerModule,
-        Textarea,
-        Toast
+        Textarea
     ],
     standalone: true,
     providers: [ConfirmationService, MessageService],
@@ -35,14 +33,13 @@ import { PAYMENT_METHOD_KEY } from '../../constants/constants';
 })
 export class PaymentMethodFormComponent implements OnInit, OnChanges {
     @Input() paymentMethod: PaymentMethod | null = null;
-    @Input() visible = false;
+    @Input() visible = false; // ✅ Ajout de l'Input visible manquant
     @Output() formSubmit = new EventEmitter<PaymentMethod>();
     @Output() formCancel = new EventEmitter<void>();
 
     paymentMethodForm!: FormGroup;
     loading = false;
     isEditMode = false;
-
 
     constructor(
         private readonly fb: FormBuilder,
@@ -58,8 +55,12 @@ export class PaymentMethodFormComponent implements OnInit, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes['paymentMethod'] && this.paymentMethod) {
+        if (changes['paymentMethod']) {
             this.updateForm();
+        }
+        // ✅ Correction : Reset du formulaire quand le modal se ferme
+        if (changes['visible'] && !this.visible && changes['visible'].previousValue) {
+            this.resetForm();
         }
     }
 
@@ -69,8 +70,6 @@ export class PaymentMethodFormComponent implements OnInit, OnChanges {
             code: ['', [Validators.required, Validators.minLength(2)]],
             description: ['']
         });
-
-        this.updateForm();
     }
 
     private updateForm(): void {
@@ -83,7 +82,7 @@ export class PaymentMethodFormComponent implements OnInit, OnChanges {
             });
         } else {
             this.isEditMode = false;
-            this.paymentMethodForm.reset();
+            this.resetForm(); // ✅ Reset quand pas de paymentMethod
         }
     }
 
@@ -92,39 +91,26 @@ export class PaymentMethodFormComponent implements OnInit, OnChanges {
         return !!(field && field.invalid && (field.dirty || field.touched));
     }
 
-
     onSubmit(): void {
         if (this.paymentMethodForm.valid) {
             this.loading = true;
             const formValue = this.paymentMethodForm.value;
 
             if (this.isEditMode && this.paymentMethod) {
+                const updatedPaymentMethod: PaymentMethod = {
+                    ...this.paymentMethod,
+                    ...formValue
+                };
 
-                this.paymentMethodService.updatePaymentMethod(this.paymentMethod.id, this.paymentMethod).subscribe({
+                this.paymentMethodService.updatePaymentMethod(this.paymentMethod.id, updatedPaymentMethod).subscribe({
                     next: (paymentMethod) => {
-                        this.messageService.add({
-                            key: PAYMENT_METHOD_KEY,
-                            severity: 'success',
-                            summary: 'Succès',
-                            detail: `Méthode de paiement  modifiée avec succès`
-                        });
+                        // ✅ Suppression du toast ici - sera géré par le parent
                         this.formSubmit.emit(paymentMethod);
                         this.loading = false;
-                        this.resetForm();
+                        this.resetForm(); // ✅ Reset après succès
                     },
                     error: (error) => {
-                        this.loading = false;
-                        this.logger.error('Erreur lors de la modification', error);
-                        if (error?.error?.details) {
-                            FormErrorUtils.applyServerErrors(this.paymentMethodForm, error.error.details);
-                        }
-
-                        this.messageService.add({
-                            key: PAYMENT_METHOD_KEY,
-                            severity: 'error',
-                            summary: 'Erreur',
-                            detail: getErrorMessage(error)
-                        });
+                        this.handleError(error);
                     }
                 });
             } else {
@@ -132,39 +118,20 @@ export class PaymentMethodFormComponent implements OnInit, OnChanges {
 
                 this.paymentMethodService.createPaymentMethod(createRequest).subscribe({
                     next: (paymentMethod) => {
-                        this.messageService.add({
-                            key: PAYMENT_METHOD_KEY,
-                            severity: 'success',
-                            summary: 'Succès',
-                            detail: `Méthode de paiement créée avec succès`
-                        });
+                        // ✅ Suppression du toast ici - sera géré par le parent
                         this.formSubmit.emit(paymentMethod);
                         this.loading = false;
-                        this.resetForm();
+                        this.resetForm(); // ✅ Reset après succès
                     },
                     error: (error) => {
-                        this.loading = false;
-                        this.logger.error('Erreur lors de la création', error);
-                        if (error?.error?.details) {
-                            FormErrorUtils.applyServerErrors(this.paymentMethodForm, error.error.details);
-                        }
-
-                        this.messageService.add({
-                            key: PAYMENT_METHOD_KEY,
-                            severity: 'error',
-                            summary: 'Erreur',
-                            detail: getErrorMessage(error)
-                        });
+                        this.handleError(error);
                     }
                 });
             }
         } else {
-            // Marquer tous les champs comme touchés pour afficher les erreurs
-            Object.keys(this.paymentMethodForm.controls).forEach(key => {
-                this.paymentMethodForm.get(key)?.markAsTouched();
-            });
-
+            this.markAllFieldsAsTouched();
             this.messageService.add({
+                key: PAYMENT_METHOD_KEY,
                 severity: 'warn',
                 summary: 'Attention',
                 detail: 'Veuillez corriger les erreurs dans le formulaire'
@@ -172,22 +139,37 @@ export class PaymentMethodFormComponent implements OnInit, OnChanges {
         }
     }
 
-    onCodeChange(event: any): void {
-        const value = event.target.value.toUpperCase();
-        this.paymentMethodForm.patchValue({ code: value }, { emitEvent: false });
+    onCancel(): void {
+        this.resetForm(); // ✅ Reset à l'annulation
+        this.formCancel.emit();
     }
 
+    private handleError(error: any): void {
+        this.loading = false;
+        this.logger.error('Erreur lors de la modification ou création', error);
+        if (error?.error?.details) {
+            FormErrorUtils.applyServerErrors(this.paymentMethodForm, error.error.details);
+        }
 
+        this.messageService.add({
+            key: PAYMENT_METHOD_KEY,
+            severity: 'error',
+            summary: 'Erreur',
+            detail: getErrorMessage(error)
+        });
+    }
 
-    onCancel(): void {
-        this.resetForm();
-        this.formCancel.emit();
+    private markAllFieldsAsTouched(): void {
+        Object.keys(this.paymentMethodForm.controls).forEach(key => {
+            this.paymentMethodForm.get(key)?.markAsTouched();
+        });
     }
 
     private resetForm(): void {
         this.paymentMethodForm.reset();
         this.isEditMode = false;
-        this.paymentMethod = null;
+        this.loading = false; // ✅ Reset du loading aussi
+        // ✅ Ne pas mettre paymentMethod à null ici car c'est géré par le parent
     }
 
     protected readonly PAYMENT_METHOD_KEY = PAYMENT_METHOD_KEY;

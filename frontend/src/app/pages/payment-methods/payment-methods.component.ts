@@ -28,7 +28,8 @@ import { PaymentMethodFormComponent } from './components/payment-method-form/pay
     templateUrl: './payment-methods.component.html',
     styleUrl: './payment-methods.component.scss'
 })
-export class PaymentMethodsComponent {// État des dialogs
+export class PaymentMethodsComponent {
+    // État des dialogs
     showFormDialog = false;
     showDetailDialog = false;
 
@@ -41,7 +42,8 @@ export class PaymentMethodsComponent {// État des dialogs
     isEditMode = false;
 
     constructor(
-        private logger: LoggerService
+        private readonly logger: LoggerService,
+        private readonly messageService: MessageService // ✅ Ajout du MessageService
     ) {
     }
 
@@ -50,7 +52,7 @@ export class PaymentMethodsComponent {// État des dialogs
     }
 
     /**
-     * Gestionnaire d'événements de la liste des companies
+     * Gestionnaire d'événements de la liste des méthodes de paiement
      */
     onPaymentMethodEvent(event: PaymentMethodEvent): void {
         this.logger.debug('Événement méthode paiement reçu', event);
@@ -70,6 +72,43 @@ export class PaymentMethodsComponent {// État des dialogs
         }
     }
 
+    onFormSubmit(paymentMethod: PaymentMethod): void {
+        this.logger.info('Formulaire soumis avec succès', { id: paymentMethod.id, nom: paymentMethod.nom });
+
+        // ✅ Affichage du toast de succès dans le parent
+        this.messageService.add({
+            key: PAYMENT_METHOD_KEY,
+            severity: 'success',
+            summary: 'Succès',
+            detail: this.isEditMode
+                ? `Méthode de paiement "${paymentMethod.nom}" modifiée avec succès`
+                : `Méthode de paiement "${paymentMethod.nom}" créée avec succès`
+        });
+
+        // ✅ Fermeture du dialog et reload de la liste
+        this.closeFormDialog();
+        this.paymentMethodList?.loadPaymentMethods();
+    }
+
+    onFormCancel(): void {
+        this.logger.info('Formulaire annulé');
+        this.closeFormDialog();
+    }
+
+    onFormDialogHide(): void {
+        // ✅ Cette méthode est appelée quand l'utilisateur ferme le dialog par X ou ESC
+        this.closeFormDialog();
+    }
+
+    private closeFormDialog(): void {
+        this.showFormDialog = false;
+        // ✅ Utilisation d'un délai pour permettre à l'animation de se terminer
+        setTimeout(() => {
+            this.selectedPaymentMethod = null;
+            this.isEditMode = false;
+        }, 100);
+    }
+
     /**
      * Ouvre le dialog de création
      */
@@ -77,7 +116,7 @@ export class PaymentMethodsComponent {// État des dialogs
         this.selectedPaymentMethod = null;
         this.isEditMode = false;
         this.showFormDialog = true;
-        this.logger.info('Dialog de création de fournisseur ouvert');
+        this.logger.info('Dialog de création de méthode de paiement ouvert');
     }
 
     /**
@@ -87,7 +126,7 @@ export class PaymentMethodsComponent {// État des dialogs
         this.selectedPaymentMethod = paymentMethod;
         this.isEditMode = true;
         this.showFormDialog = true;
-        this.logger.info(`Dialog d'édition ouvert pour le fournisseur: ${paymentMethod.nom}`);
+        this.logger.info(`Dialog d'édition ouvert pour la méthode de paiement: ${paymentMethod.nom}`);
     }
 
     /**
@@ -96,73 +135,7 @@ export class PaymentMethodsComponent {// État des dialogs
     private openDetailDialog(paymentMethod: PaymentMethod): void {
         this.selectedPaymentMethod = paymentMethod;
         this.showDetailDialog = true;
-        this.logger.info(`Dialog de détails ouvert pour le fournisseur: ${paymentMethod.nom}`);
-    }
-
-    /**
-     * Gestionnaire de soumission du formulaire
-     */
-    onFormSubmit(paymentMethod: PaymentMethod): void {
-        this.logger.info('Formulaire soumis avec succès', { id: paymentMethod.id, nom: paymentMethod.nom });
-        this.closeFormDialog();
-
-        // Le rafraîchissement de la liste est géré par le composant CompanyListComponent
-        this.paymentMethodList?.loadPaymentMethods()
-    }
-
-    /**
-     * Gestionnaire d'annulation du formulaire
-     */
-    onFormCancel(): void {
-        this.logger.info('Formulaire annulé');
-        this.closeFormDialog();
-    }
-
-    /**
-     * Fermeture du dialog de formulaire
-     */
-    onFormDialogHide(): void {
-        this.closeFormDialog();
-    }
-
-    /**
-     * Ferme le dialog de formulaire
-     */
-    private closeFormDialog(): void {
-        this.showFormDialog = false;
-        this.selectedPaymentMethod = null;
-        this.isEditMode = false;
-    }
-
-    /**
-     * Gestionnaire de clic sur édition depuis les détails
-     */
-    onDetailEditClick(paymentMethod: PaymentMethod): void {
-        this.logger.info(`Passage des détails à l'édition pour: ${paymentMethod.nom}`);
-        this.showDetailDialog = false;
-        this.openEditDialog(paymentMethod);
-    }
-
-    /**
-     * Gestionnaire de fermeture des détails
-     */
-    onDetailCloseClick(): void {
-        this.closeDetailDialog();
-    }
-
-    /**
-     * Fermeture du dialog de détails
-     */
-    onDetailDialogHide(): void {
-        this.closeDetailDialog();
-    }
-
-    /**
-     * Ferme le dialog de détails
-     */
-    private closeDetailDialog(): void {
-        this.showDetailDialog = false;
-        this.selectedPaymentMethod = null;
+        this.logger.info(`Dialog de détails ouvert pour la méthode de paiement: ${paymentMethod.nom}`);
     }
 
     onCreate() {

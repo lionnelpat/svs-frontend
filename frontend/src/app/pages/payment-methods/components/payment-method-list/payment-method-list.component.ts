@@ -14,6 +14,8 @@ import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { PaymentMethod, PaymentMethodEvent, PaymentMethodFilter } from '../../interfaces/payment-method.interface';
 import { PaymentMethodService } from '../../service/payment-method.service';
+import {Toast} from "primeng/toast";
+import {PAYMENT_METHOD_KEY} from "../../constants/constants";
 
 
 @Component({
@@ -29,7 +31,8 @@ import { PaymentMethodService } from '../../service/payment-method.service';
         ConfirmDialogModule,
         TooltipModule,
         IconField,
-        InputIcon
+        InputIcon,
+        Toast
     ],
     providers: [ConfirmationService, MessageService],
     standalone: true,
@@ -149,9 +152,10 @@ export class PaymentMethodListComponent implements OnInit {
         this.paymentMethodService.deletePaymentMethod(paymentMethod.id).subscribe({
             next: () => {
                 this.messageService.add({
+                    key: PAYMENT_METHOD_KEY,
                     severity: 'success',
                     summary: 'Succès',
-                    detail: `Compagnie "${paymentMethod.nom}" supprimée avec succès`
+                    detail: `Méthode de paiement "${paymentMethod.nom}" supprimée avec succès`
                 });
                 this.loadPaymentMethods();
             },
@@ -210,5 +214,7 @@ export class PaymentMethodListComponent implements OnInit {
         }
         return 'Aucune méthode de paiement n\'a été enregistrée pour le moment.';
     }
+
+    protected readonly PAYMENT_METHOD_KEY = PAYMENT_METHOD_KEY;
 }
 
