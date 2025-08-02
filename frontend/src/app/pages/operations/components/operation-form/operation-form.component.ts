@@ -12,6 +12,7 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { MessageService } from 'primeng/api';
 import {Toast} from "primeng/toast";
 import {OPERATION_KEY} from "../../constants/constant";
+import {Textarea} from "primeng/textarea";
 
 @Component({
     selector: 'app-operation-form',
@@ -23,7 +24,8 @@ import {OPERATION_KEY} from "../../constants/constant";
         InputTextModule,
         InputNumberModule,
         DividerModule,
-        Toast
+        Toast,
+        Textarea
     ],
     templateUrl: './operation-form.component.html',
     styleUrl: "./operation-form.component.scss",

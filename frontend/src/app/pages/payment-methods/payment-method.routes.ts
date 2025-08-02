@@ -1,37 +1,19 @@
-import { Routes } from '@angular/router';
-import { PaymentMethodsComponent } from './payment-methods.component';
+// payment-method.routes.ts
 
+import { Routes } from '@angular/router';
 
 export const paymentMethodRoutes: Routes = [
     {
         path: '',
-        component: PaymentMethodsComponent,
-        children: [
-            {
-                path: '',
-                redirectTo: 'list',
-                pathMatch: 'full'
-            },
-            {
-                path: 'list',
-                component: PaymentMethodsComponent,
-                data: { view: 'list' }
-            },
-            {
-                path: 'new',
-                component: PaymentMethodsComponent,
-                data: { view: 'form', mode: 'create' }
-            },
-            {
-                path: ':id',
-                component: PaymentMethodsComponent,
-                data: { view: 'detail' }
-            },
-            {
-                path: ':id/edit',
-                component: PaymentMethodsComponent,
-                data: { view: 'form', mode: 'edit' }
-            }
-        ]
+        redirectTo: 'list',
+        pathMatch: 'full'
+    },
+    {
+        path: 'list',
+        loadComponent: () => import('./payment-methods.component').then(c => c.PaymentMethodsComponent),
+        data: {
+            title: 'Méthodes de paiement',
+            breadcrumb: 'Liste'
+        }
     }
-]
+];

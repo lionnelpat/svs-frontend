@@ -1,25 +1,39 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+// components/payment-method-list/payment-method-list.component.ts
+
+import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
+
+// PrimeNG Imports
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { DropdownModule } from 'primeng/dropdown';
 import { TagModule } from 'primeng/tag';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { TooltipModule } from 'primeng/tooltip';
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { LoggerService } from '../../../../core/services/logger.service';
-import { IconField } from 'primeng/iconfield';
-import { InputIcon } from 'primeng/inputicon';
-import { PaymentMethod, PaymentMethodEvent, PaymentMethodFilter } from '../../interfaces/payment-method.interface';
-import { PaymentMethodService } from '../../service/payment-method.service';
-import {Toast} from "primeng/toast";
-import {PAYMENT_METHOD_KEY} from "../../constants/constants";
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { SkeletonModule } from 'primeng/skeleton';
+import { MessageModule } from 'primeng/message';
 
+// Interfaces & Services
+import {
+    PaymentMethod,
+    PaymentMethodEvent,
+    PaymentMethodFilter,
+} from '../../interfaces/payment-method.interface';
+import { PaymentMethodService } from '../../service/payment-method.service';
+import {Tooltip} from "primeng/tooltip";
+import {
+    PAYMENT_METHOD_CONSTANTS,
+    PAYMENT_METHOD_SORT_OPTIONS,
+    PAYMENT_METHOD_STATUS_OPTIONS
+} from "../../constants/constants";
+import {LoggerService} from "../../../../core/services/logger.service";
 
 @Component({
     selector: 'app-payment-method-list',
+    standalone: true,
     imports: [
         CommonModule,
         FormsModule,
@@ -28,193 +42,164 @@ import {PAYMENT_METHOD_KEY} from "../../constants/constants";
         InputTextModule,
         DropdownModule,
         TagModule,
-        ConfirmDialogModule,
-        TooltipModule,
-        IconField,
-        InputIcon,
-        Toast
+        IconFieldModule,
+        InputIconModule,
+        SkeletonModule,
+        MessageModule,
+        Tooltip
     ],
-    providers: [ConfirmationService, MessageService],
-    standalone: true,
     templateUrl: './payment-method-list.component.html',
     styleUrl: './payment-method-list.component.scss'
 })
+export class PaymentMethodListComponent implements OnInit, OnDestroy {
+    private readonly destroy$ = new Subject<void>();
+    private readonly searchSubject = new Subject<string>();
 
-export class PaymentMethodListComponent implements OnInit {
     @Output() paymentMethodEvent = new EventEmitter<PaymentMethodEvent>();
 
+    // État des données
     paymentMethods: PaymentMethod[] = [];
-    loading = false;
     totalRecords = 0;
-    currentPage = 0;
-    pageSize = 10;
+    loading = false;
+    errorMessage = '';
 
-    // Filtres
-    searchTerm = '';
-    selectedStatus: boolean | null = null;
+    // Filtres et recherche
+    searchQuery = '';
+    selectedStatus: boolean | undefined;
+    filter: PaymentMethodFilter = {
+        page: 0,
+        size: PAYMENT_METHOD_CONSTANTS.DEFAULT_PAGE_SIZE,
+        sort: 'nom',
+        direction: 'asc'
+    };
 
-    statusOptions = [
-        { label: 'Actif', value: true },
-        { label: 'Inactif', value: false }
-    ];
+    // Options pour les dropdowns
+    statusOptions = PAYMENT_METHOD_STATUS_OPTIONS;
+    sortOptions = PAYMENT_METHOD_SORT_OPTIONS;
 
     constructor(
         private readonly paymentMethodService: PaymentMethodService,
-        private readonly confirmationService: ConfirmationService,
-        private readonly messageService: MessageService,
         private readonly logger: LoggerService
     ) {}
 
     ngOnInit(): void {
+        this.setupSearchDebounce();
         this.loadPaymentMethods();
+        this.logger.info('PaymentMethodListComponent initialisé');
     }
 
-    loadPaymentMethods(): void {
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
+    /**
+     * Configure le debounce pour la recherche
+     */
+    private setupSearchDebounce(): void {
+        this.searchSubject
+            .pipe(
+                debounceTime(300),
+                distinctUntilChanged(),
+                takeUntil(this.destroy$)
+            )
+            .subscribe(query => {
+                this.filter.query = query || undefined;
+                this.filter.page = 0;
+                this.loadPaymentMethods();
+            });
+    }
+
+    /**
+     * Charge les méthodes de paiement
+     */
+    private loadPaymentMethods(): void {
         this.loading = true;
+        this.errorMessage = '';
 
-        const filter: PaymentMethodFilter = {
-            query: this.searchTerm || undefined,
-            active: this.selectedStatus ?? undefined,
-            page: this.currentPage,
-            size: this.pageSize
-        };
-
-        this.paymentMethodService.getPaymentMethods(filter).subscribe({
-            next: (resp) => {
-                console.log(resp.data.paymentMethods);
-                this.paymentMethods = resp.data.paymentMethods;
-                this.totalRecords = resp.data.totalElements;
-                this.currentPage = resp.data.currentPage;     // ✅ correction
-                this.pageSize = resp.data.size;
-                this.loading = false;
-                this.logger.debug(`${resp.data.totalElements} methodes de paiement chargées`);
-            },
-            error: (error) => {
-                this.loading = false;
-                this.logger.error('Erreur lors du chargement des methodes de paiement', error);
-            }
-        });
+        this.paymentMethodService.getPaymentMethods(this.filter)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: (response) => {
+                    this.paymentMethods = response.data.paymentMethods;
+                    this.totalRecords = response.data.totalElements;
+                    this.loading = false;
+                    this.logger.debug('Méthodes de paiement chargées:', response.data);
+                },
+                error: (error) => {
+                    this.loading = false;
+                    this.errorMessage = 'Erreur lors du chargement des méthodes de paiement';
+                    this.logger.error('Erreur chargement:', error);
+                }
+            });
     }
 
+    /**
+     * Gère le changement de recherche
+     */
+    onSearchChange(event: any): void {
+        const query = event.target.value;
+        this.searchSubject.next(query);
+    }
+
+    /**
+     * Gère le changement de statut
+     */
+    onStatusChange(): void {
+        this.filter.active = this.selectedStatus;
+        this.filter.page = 0;
+        this.loadPaymentMethods();
+    }
+
+    /**
+     * Gère le lazy loading de la table
+     */
     onLazyLoad(event: any): void {
-        this.currentPage = Math.floor(event.first / event.rows);
-        this.pageSize = event.rows;
-        this.loadPaymentMethods();
-    }
+        this.filter.page = Math.floor(event.first / event.rows);
+        this.filter.size = event.rows;
 
-    onSearch(): void {
-        this.currentPage = 0;
-        this.loadPaymentMethods();
-    }
-
-    onFilter(): void {
-        this.currentPage = 0;
-        this.loadPaymentMethods();
-    }
-
-    onCreate(): void {
-        this.paymentMethodEvent.emit({ type: 'create' });
-    }
-
-    onEdit(paymentMethod: PaymentMethod): void {
-        this.paymentMethodEvent.emit({ type: 'edit', paymentMethod });
-    }
-
-    onDelete(paymentMethod: PaymentMethod): void {
-        this.confirmationService.confirm({
-            key: 'delete',
-            message: `Êtes-vous sûr de vouloir supprimer la methode de paiement "${paymentMethod.nom}" ?`,
-            header: 'Confirmation de suppression',
-            icon: 'pi pi-exclamation-triangle',
-            acceptLabel: 'Oui, supprimer',
-            rejectLabel: 'Annuler',
-            accept: () => {
-                this.deletePaymentMethod(paymentMethod);
-            }
-        });
-    }
-
-    onToggleStatus(expenseCategory: PaymentMethod): void {
-        const action = expenseCategory.actif ? 'désactiver' : 'activer';
-        this.confirmationService.confirm({
-            message: `Voulez-vous ${action} la catégorie "${expenseCategory.nom}" ?`,
-            header: `Confirmation`,
-            icon: 'pi pi-question-circle',
-            acceptLabel: `Oui, ${action}`,
-            rejectLabel: 'Annuler',
-            accept: () => {
-                this.toggleExpenseSupplierStatus(expenseCategory);
-            }
-        });
-    }
-
-    private deletePaymentMethod(paymentMethod: PaymentMethod): void {
-        this.paymentMethodService.deletePaymentMethod(paymentMethod.id).subscribe({
-            next: () => {
-                this.messageService.add({
-                    key: PAYMENT_METHOD_KEY,
-                    severity: 'success',
-                    summary: 'Succès',
-                    detail: `Méthode de paiement "${paymentMethod.nom}" supprimée avec succès`
-                });
-                this.loadPaymentMethods();
-            },
-            error: (error) => {
-                this.logger.error('Erreur lors de la suppression', error);
-            }
-        });
-    }
-
-    private toggleExpenseSupplierStatus(paymentMethod: PaymentMethod): void {
-        this.paymentMethodService.togglePaymentMethodStatus(paymentMethod.id).subscribe({
-            next: (updatedPaymentMethod) => {
-                const status = updatedPaymentMethod.actif ? 'activée' : 'désactivée';
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Succès',
-                    detail: `Compagnie "${updatedPaymentMethod.nom}" ${status} avec succès`
-                });
-                this.loadPaymentMethods();
-            },
-            error: (error) => {
-                this.logger.error('Erreur lors du changement de statut', error);
-            }
-        });
-    }
-
-    /**
-     * Vérifie si des filtres sont actifs
-     */
-    hasActiveFilters(): boolean {
-        return !!(this.searchTerm || this.selectedStatus !== null);
-    }
-
-    /**
-     * Efface tous les filtres
-     */
-    clearFilters(): void {
-        this.searchTerm = '';
-        this.selectedStatus = null;
-        this.currentPage = 0;
-        this.loadPaymentMethods();
-
-        this.messageService.add({
-            severity: 'info',
-            summary: 'Filtres effacés',
-            detail: 'Tous les filtres ont été supprimés'
-        });
-    }
-
-    /**
-     * Retourne le message d'état vide approprié
-     */
-    getEmptyMessage(): string {
-        if (this.hasActiveFilters()) {
-            return 'Aucune méthode de paiement ne correspond à vos critères de recherche.';
+        if (event.sortField) {
+            this.filter.sort = event.sortField;
+            this.filter.direction = event.sortOrder === 1 ? 'asc' : 'desc';
         }
-        return 'Aucune méthode de paiement n\'a été enregistrée pour le moment.';
+
+        this.loadPaymentMethods();
     }
 
-    protected readonly PAYMENT_METHOD_KEY = PAYMENT_METHOD_KEY;
-}
+    /**
+     * Calcule le numéro de ligne
+     */
+    getRowNumber(rowIndex: number): number {
+        return (this.filter.page ?? 0) * (this.filter.size ?? 10) + rowIndex + 1;
+    }
 
+    /**
+     * Édite une méthode de paiement
+     */
+    editPaymentMethod(paymentMethod: PaymentMethod): void {
+        this.paymentMethodEvent.emit({
+            type: 'edit',
+            paymentMethod
+        });
+    }
+
+    /**
+     * Supprime une méthode de paiement
+     */
+    deletePaymentMethod(paymentMethod: PaymentMethod): void {
+        this.paymentMethodEvent.emit({
+            type: 'delete',
+            paymentMethod
+        });
+    }
+
+    /**
+     * Message d'état vide
+     */
+    get emptyMessage(): string {
+        if (this.filter.query || this.filter.active !== undefined) {
+            return 'Aucune méthode de paiement ne correspond aux critères de recherche';
+        }
+        return PAYMENT_METHOD_CONSTANTS.TABLE.EMPTY_MESSAGE;
+    }
+}

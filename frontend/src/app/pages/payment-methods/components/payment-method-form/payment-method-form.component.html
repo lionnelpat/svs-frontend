@@ -1,103 +1,131 @@
+<p-dialog
+    [visible]="visible"
+    [style]="{width: '450px'}"
+    [header]="dialogTitle"
+    [modal]="true"
+    [closable]="true"
+    [draggable]="false"
+    [resizable]="false"
+    (onHide)="onHide()"
+    styleClass="p-fluid">
 
-<form [formGroup]="paymentMethodForm" (ngSubmit)="onSubmit()" class="operation-form">
-    <!-- Informations générales -->
-    <div class="form-section">
-        <h5 class="section-title">
-            <i class="pi pi-credit-card mr-2"></i>
-            Informations générales
-        </h5>
+    <form [formGroup]="paymentMethodForm" (ngSubmit)="onSubmit()" class="payment-method-form">
+        <!-- Section d'informations générales -->
+        <div class="formgrid grid mb-4">
+            <div class="field col-12">
+                <div class="flex align-items-center mb-3">
+                    <i class="pi pi-info-circle text-primary mr-2"></i>
+                    <span class="text-900 font-semibold">Informations générales</span>
+                </div>
+            </div>
 
-        <div class="grid">
-            <div class="col-12 md:col-6 mb-3">
-                <label for="nom" class="field-label">
-                    Nom <span class="required">*</span>
+            <!-- Nom -->
+            <div class="field col-12">
+                <label for="nom" class="font-semibold">
+                    Nom <span class="text-red-500">*</span>
                 </label>
                 <input
                     id="nom"
+                    type="text"
                     pInputText
                     formControlName="nom"
                     placeholder="Ex: Orange Money"
-                    class="w-full"
                     [class.ng-invalid]="isFieldInvalid('nom')"
-                />
-                <small class="field-error" *ngIf="isFieldInvalid('nom') && paymentMethodForm.get('nom')?.hasError('required')">
-                    Le nom est obligatoire
-                </small>
-                <small class="field-error" *ngIf="isFieldInvalid('nom') && paymentMethodForm.get('nom')?.hasError('minlength')">
-                    Le nom doit contenir au moins 2 caractères
-                </small>
-                <small class="field-error" *ngIf="paymentMethodForm.get('nom')?.hasError('serverError')">
-                    {{ paymentMethodForm.get('nom')?.getError('serverError') }}
+                    [readonly]="isViewMode">
+
+                <small class="p-error block mt-1" *ngIf="isFieldInvalid('nom')">
+                    {{ getFieldError('nom') }}
                 </small>
             </div>
 
-            <div class="col-12 md:col-6 mb-3">
-                <label for="code" class="field-label">
-                    Code <span class="required">*</span>
+            <!-- Code -->
+            <div class="field col-12">
+                <label for="code" class="font-semibold">
+                    Code <span class="text-red-500">*</span>
                 </label>
                 <input
                     id="code"
+                    type="text"
                     pInputText
                     formControlName="code"
                     placeholder="Ex: OM"
-                    class="w-full"
                     [class.ng-invalid]="isFieldInvalid('code')"
-                />
-                <small class="field-error" *ngIf="isFieldInvalid('code') && paymentMethodForm.get('code')?.hasError('required')">
-                    Le code est obligatoire
+                    [readonly]="isViewMode"
+                    style="text-transform: uppercase;">
+
+                <small class="p-error block mt-1" *ngIf="isFieldInvalid('code')">
+                    {{ getFieldError('code') }}
                 </small>
-                <small class="field-error" *ngIf="isFieldInvalid('code') && paymentMethodForm.get('code')?.hasError('minlength')">
-                    Le code doit contenir au moins 2 caractères
-                </small>
-                <small class="field-error" *ngIf="paymentMethodForm.get('code')?.hasError('serverError')">
-                    {{ paymentMethodForm.get('code')?.getError('serverError') }}
+
+                <small class="p-info block mt-1" *ngIf="!isFieldInvalid('code')">
+                    Code unique en majuscules (2-10 caractères)
                 </small>
             </div>
 
-            <div class="col-12 mb-3">
-                <label for="description" class="field-label">
-                    Description
-                </label>
-                <textarea
-                    id="description"
-                    pInputTextarea
-                    formControlName="description"
-                    placeholder="Description de la méthode de paiement..."
-                    class="w-full"
-                    rows="3"
-                    [class.ng-invalid]="isFieldInvalid('description')"
-                ></textarea>
-                <small class="field-error" *ngIf="paymentMethodForm.get('description')?.hasError('serverError')">
-                    {{ paymentMethodForm.get('description')?.getError('serverError') }}
+            <div class="grid">
+                <div class="col-12">
+                    <label for="description" class="field-label">
+                        Description <span class="required">*</span>
+                    </label>
+                    <textarea
+                        id="description"
+                        pInputTextarea
+                        formControlName="description"
+                        placeholder="Description détaillée de l'opération..."
+                        class="w-full"
+                        rows="3"
+                        [class.ng-invalid]="isFieldInvalid('description')"
+                    ></textarea>
+                    <small class="field-error" *ngIf="isFieldInvalid('description')">
+                        La description est obligatoire
+                    </small>
+                </div>
+            </div>
+
+            <!-- Statut actif (seulement en mode édition) -->
+            <div class="field col-12" *ngIf="mode === 'edit' || mode === 'view'">
+                <div class="flex align-items-center">
+                    <p-checkbox
+                        inputId="actif"
+                        formControlName="actif"
+                        [binary]="true"
+                        [disabled]="isViewMode">
+                    </p-checkbox>
+                    <label for="actif" class="ml-2 font-semibold">Méthode de paiement active</label>
+                </div>
+                <small class="text-600 block mt-1">
+                    Les méthodes inactives ne sont pas disponibles pour les nouvelles transactions
                 </small>
             </div>
         </div>
 
-        <p-divider></p-divider>
+        <!-- Messages d'erreur globaux -->
+        <p-messages
+            *ngIf="formErrors.length > 0"
+            [value]="formErrors"
+            [enableService]="false"
+            [closable]="false"
+            styleClass="mb-3">
+        </p-messages>
 
         <!-- Actions -->
-        <div class="form-actions mt-3 flex flex-row justify-end">
-            <button
-                type="button"
-                pButton
+        <div class="flex justify-content-end gap-2 pt-3 border-top-1 surface-border">
+            <p-button
                 label="Annuler"
                 icon="pi pi-times"
-                class="p-button-text"
-                (click)="onCancel()"
-                [disabled]="loading"
-            ></button>
-            <button
-                type="submit"
-                pButton
-                [label]="isEditMode ? 'Modifier' : 'Créer'"
-                [icon]="isEditMode ? 'pi pi-check' : 'pi pi-plus'"
-                [loading]="loading"
-                [disabled]="paymentMethodForm.invalid || loading"
-                class="ml-2"
-                style="background-color: var(--svs-primary); border-color: var(--svs-primary)"
-            ></button>
-        </div>
-    </div>
-</form>
+                (onClick)="onCancel()"
+                [text]="true"
+                severity="secondary">
+            </p-button>
 
-<!-- Toast supprimé du composant enfant - géré par le parent -->
+            <p-button
+                *ngIf="!isViewMode"
+                [label]="submitButtonLabel"
+                icon="pi pi-check"
+                type="submit"
+                [loading]="saving"
+                [disabled]="paymentMethodForm.invalid || saving">
+            </p-button>
+        </div>
+    </form>
+</p-dialog>
