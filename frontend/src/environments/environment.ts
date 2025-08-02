@@ -22,5 +22,28 @@ export const environment = {
     cacheTimeout: 300000, // 5 minutes
 
     // Debug
-    enableLogging: true
+    enableLogging: true,
+
+
+    // Configuration Dashboard
+    dashboard: {
+        defaultNumberOfMonths: 12,
+        defaultLimit: 6,
+        refreshInterval: 300000, // 5 minutes en millisecondes
+        enableAutoRefresh: false
+    },
+
+    // Configuration des graphiques
+    charts: {
+        defaultColors: {
+            primary: ['#3b82f6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'],
+            hover: ['#2563eb', '#0891b2', '#059669', '#d97706', '#dc2626', '#7c3aed'],
+            expenses: ['#ef4444', '#f59e0b', '#10b981', '#06b6d4', '#8b5cf6', '#ec4899'],
+            expensesHover: ['#dc2626', '#d97706', '#059669', '#0891b2', '#7c3aed', '#db2777']
+        },
+        animation: {
+            duration: 1000,
+            easing: 'easeInOutQuart'
+        }
+    }
 };

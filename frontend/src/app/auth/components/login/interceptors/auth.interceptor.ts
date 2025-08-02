@@ -14,7 +14,7 @@ import { AuthService } from '../services/auth.service';
 export class AuthInterceptor implements HttpInterceptor {
     private readonly authService = inject(AuthService);
     private isRefreshing = false;
-    private refreshTokenSubject: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
+    private readonly refreshTokenSubject: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         // Ajouter le token d'authentification si disponible

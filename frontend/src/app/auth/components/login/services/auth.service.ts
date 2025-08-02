@@ -1,7 +1,7 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
-import {  Observable, throwError, EMPTY, timer } from 'rxjs';
+import {Observable, throwError, EMPTY, timer, BehaviorSubject} from 'rxjs';
 import { catchError, tap, switchMap } from 'rxjs/operators';
 import { environment } from '../../../../../environments/environment';
 import { AuthResponse, ErrorResponse, LoginRequest, User } from '../interfaces/auth.interface';
@@ -32,6 +32,12 @@ export class AuthService {
     public readonly currentUser = this._currentUser.asReadonly();
     public readonly isLoading = this._isLoading.asReadonly();
 
+    private inactivityTimeout: any;
+    private readonly maxInactivityTime =  60 * 1000; // 1 minute en millisecondes
+    private readonly sessionExpiredSubject = new BehaviorSubject<boolean>(false);
+
+    sessionExpired$ = this.sessionExpiredSubject.asObservable();
+
     // Propriétés calculées
     public readonly userFullName = computed(() =>
         this.currentUser()?.fullName || 'Utilisateur'
@@ -41,9 +47,18 @@ export class AuthService {
         this.currentUser()?.roles || []
     );
 
-    constructor() {
+    constructor(private readonly route: Router) {
         this.initializeAuthState();
         this.startTokenRefreshTimer();
+        this.initInactivityTracking();
+    }
+
+    private initInactivityTracking() {
+        // Suivre l’activité de l’utilisateur
+        window.addEventListener('mousemove', () => this.resetInactivityTimeout());
+        window.addEventListener('keydown', () => this.resetInactivityTimeout());
+
+        this.resetInactivityTimeout();
     }
 
     /**
@@ -272,5 +287,42 @@ export class AuthService {
                 return EMPTY;
             })
         ).subscribe();
+    }
+
+    private resetInactivityTimeout() {
+        // Réinitialiser le timeout pour chaque interaction
+        clearTimeout(this.inactivityTimeout);
+
+        // Démarrer un nouveau timer d'inactivité
+        this.inactivityTimeout = setTimeout(() => this.checkSessionStatus(), this.maxInactivityTime);
+    }
+
+    getExpirationTimeFromToken(token: string | null): number {
+        if (!token) {
+            return 0;
+        }
+        const tokenParts = token.split('.');
+        if (tokenParts.length !== 3) {
+            return 0;
+        }
+        const payload = JSON.parse(atob(tokenParts[1]));
+        return payload?.exp ? payload.exp * 1000 : 0;
+    }
+
+    private async checkSessionStatus() {
+        if (this.route.url === '/auth/login') {
+            return;
+        }
+
+        const token = localStorage.getItem('access_token');
+        // Vérifiez si le token est valide et, s'il est expiré, déconnectez l'utilisateur
+        const currentTime = Math.floor(Date.now());
+        const isTokenExpired = this.getExpirationTimeFromToken(token) <= currentTime;
+
+        if (isTokenExpired) {
+            this.sessionExpiredSubject.next(true);
+        } else {
+            this.resetInactivityTimeout();
+        }
     }
 }

@@ -47,7 +47,7 @@ export class LoginFormComponent implements OnInit {
 
     ngOnInit(): void {
         // Récupérer l'URL de retour s'il y en a une
-        this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+        this.returnUrl = this.route.snapshot.queryParams['returnUrl'] ?? '/dashboard';
 
         // Si déjà connecté, rediriger
         if (this.authService.isAuthenticated()) {
