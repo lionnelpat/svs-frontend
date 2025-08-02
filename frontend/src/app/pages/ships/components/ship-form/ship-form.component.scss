@@ -51,26 +51,133 @@
         padding-top: 1rem;
         border-top: 1px solid var(--svs-surface-dark);
     }
+}
 
-    ::ng-deep {
-        .ng-invalid.ng-touched {
+// Corrections pour le modal et les dropdowns
+:host ::ng-deep {
+    // Validation states
+    .ng-invalid.ng-touched {
+        border-color: #ef4444 !important;
+    }
+
+    .p-dropdown.ng-invalid.ng-touched {
+        .p-dropdown-label {
             border-color: #ef4444 !important;
         }
+    }
 
-        .p-dropdown.ng-invalid.ng-touched {
-            .p-dropdown-label {
-                border-color: #ef4444 !important;
+    .p-inputnumber.ng-invalid.ng-touched {
+        .p-inputtext {
+            border-color: #ef4444 !important;
+        }
+    }
+
+    .p-button:disabled {
+        opacity: 0.6;
+    }
+
+    // Corrections pour les dropdowns dans les modals
+    .p-dropdown {
+        // Assurer que le dropdown a une largeur correcte
+        width: 100%;
+
+        // Configuration du panel dropdown
+        &-panel {
+            // Z-index élevé pour être au-dessus du modal
+            z-index: 9999 !important;
+
+            // Position et dimensions
+            min-width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+
+            // Assurer que le panel est visible
+            position: absolute !important;
+
+            // Style pour le panel
+            border: 1px solid var(--surface-300);
+            border-radius: 6px;
+            background: var(--surface-0);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        // Style pour les items du dropdown
+        &-items {
+            .p-dropdown-item {
+                padding: 0.75rem;
+                cursor: pointer;
+
+                &:hover {
+                    background: var(--surface-100);
+                }
+
+                &.p-highlight {
+                    background: var(--primary-color);
+                    color: var(--primary-color-text);
+                }
             }
         }
 
-        .p-inputnumber.ng-invalid.ng-touched {
-            .p-inputtext {
-                border-color: #ef4444 !important;
+        // Style pour le filtre
+        &-filter-container {
+            padding: 0.5rem;
+            border-bottom: 1px solid var(--surface-200);
+
+            .p-dropdown-filter {
+                width: 100%;
+                padding: 0.5rem;
+                border: 1px solid var(--surface-300);
+                border-radius: 4px;
             }
         }
+    }
 
-        .p-button:disabled {
-            opacity: 0.6;
+    // Configuration spécifique pour le modal
+    .p-dialog {
+        // Assurer que le contenu du modal ne coupe pas les dropdowns
+        .p-dialog-content {
+            overflow: visible !important;
+            padding: 1.5rem;
+        }
+
+        // Z-index du modal
+        z-index: 1000;
+
+        // Assurer que le modal mask n'interfère pas
+        .p-dialog-mask {
+            z-index: 999;
+        }
+    }
+
+    // Configuration pour le Overlay de PrimeNG
+    .p-overlaypanel {
+        z-index: 9999 !important;
+    }
+
+    // Configuration spécifique pour les dropdowns avec appendTo="body"
+    .p-dropdown-panel {
+        z-index: 9999 !important;
+    }
+}
+
+// Corrections additionnelles pour le responsive
+@media (max-width: 768px) {
+    .ship-form {
+        .form-actions {
+            flex-direction: column;
+            gap: 0.5rem;
+
+            .p-button {
+                width: 100%;
+            }
+        }
+    }
+
+    :host ::ng-deep {
+        .p-dropdown-panel {
+            max-height: 150px !important;
+            width: 90vw !important;
+            max-width: none !important;
         }
     }
 }

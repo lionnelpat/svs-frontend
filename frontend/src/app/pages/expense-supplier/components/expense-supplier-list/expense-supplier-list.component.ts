@@ -19,7 +19,6 @@ import {
 } from '../../interfaces/expense-supplier.interface';
 import { ExpenseSupplierService } from '../../service/expense-supplier.service';
 import {Toast} from "primeng/toast";
-import {MOCK_EXPENSE_SUPPLIERS} from "../../../../shared/data/expense.data";
 import {EXPENSE_SUPPLIER_KEY} from "../../constants/constants";
 
 
@@ -219,8 +218,6 @@ export class ExpenseSupplierListComponent implements OnInit {
         }
         return 'Aucun fournisseur n\'a été enregistrée pour le moment.';
     }
-
-    protected readonly MOCK_EXPENSE_SUPPLIERS = MOCK_EXPENSE_SUPPLIERS;
     protected readonly EXPENSE_SUPPLIER_KEY = EXPENSE_SUPPLIER_KEY;
 }
 

@@ -37,6 +37,9 @@
                     optionValue="value"
                     [filter]="true"
                     filterBy="label"
+                    [showClear]="true"
+                    appendTo="body"
+                    [baseZIndex]="10000"
                     class="w-full"
                     [class.ng-invalid]="isFieldInvalid('compagnieId')"
                 ></p-dropdown>
@@ -56,6 +59,9 @@
                     formControlName="typeNavire"
                     [options]="shipTypeOptions"
                     placeholder="Sélectionner le type"
+                    [showClear]="true"
+                    appendTo="body"
+                    [baseZIndex]="10000"
                     class="w-full"
                     [class.ng-invalid]="isFieldInvalid('typeNavire')"
                     (onChange)="onShipTypeChange($event)"
@@ -75,6 +81,10 @@
                     [options]="flagOptions"
                     placeholder="Sélectionner le pavillon"
                     [filter]="true"
+                    filterBy="label"
+                    [showClear]="true"
+                    appendTo="body"
+                    [baseZIndex]="10000"
                     class="w-full"
                     [class.ng-invalid]="isFieldInvalid('pavillon')"
                 ></p-dropdown>
@@ -104,6 +114,41 @@
 
     <p-divider></p-divider>
 
+    <!-- Construction et classification -->
+    <div class="form-section">
+        <h4 class="section-title">
+            <i class="pi pi-wrench mr-2"></i>
+            Construction et classification
+        </h4>
+
+        <div class="grid">
+            <div class="col-12 md:col-6">
+                <label for="classification" class="field-label">
+                    Société de classification <span class="required">*</span>
+                </label>
+                <p-dropdown
+                    id="classification"
+                    formControlName="classification"
+                    [options]="classificationOptions"
+                    placeholder="Sélectionner la classification"
+                    [filter]="true"
+                    filterBy="label"
+                    [showClear]="true"
+                    appendTo="body"
+                    [baseZIndex]="10000"
+                    class="w-full"
+                    [class.ng-invalid]="isFieldInvalid('classification')"
+                ></p-dropdown>
+                <small class="field-error" *ngIf="isFieldInvalid('classification')">
+                    La société de classification est obligatoire
+                </small>
+            </div>
+        </div>
+    </div>
+
+
+    <p-divider></p-divider>
+
     <!-- Identification -->
     <div class="form-section">
         <h4 class="section-title">
@@ -126,12 +171,12 @@
                     maxlength="7"
                 />
                 <small class="field-error" *ngIf="isFieldInvalid('numeroIMO')">
-              <span *ngIf="shipForm.get('numeroIMO')?.hasError('required')">
-                Le numéro IMO est obligatoire
-              </span>
+                    <span *ngIf="shipForm.get('numeroIMO')?.hasError('required')">
+                        Le numéro IMO est obligatoire
+                    </span>
                     <span *ngIf="shipForm.get('numeroIMO')?.hasError('pattern')">
-                Format invalide (7 chiffres)
-              </span>
+                        Format invalide (7 chiffres)
+                    </span>
                 </small>
             </div>
 
@@ -149,12 +194,12 @@
                     maxlength="9"
                 />
                 <small class="field-error" *ngIf="isFieldInvalid('numeroMMSI')">
-              <span *ngIf="shipForm.get('numeroMMSI')?.hasError('required')">
-                Le numéro MMSI est obligatoire
-              </span>
+                    <span *ngIf="shipForm.get('numeroMMSI')?.hasError('required')">
+                        Le numéro MMSI est obligatoire
+                    </span>
                     <span *ngIf="shipForm.get('numeroMMSI')?.hasError('pattern')">
-                Format invalide (9 chiffres)
-              </span>
+                        Format invalide (9 chiffres)
+                    </span>
                 </small>
             </div>
 
@@ -179,35 +224,7 @@
         </div>
     </div>
 
-    <p-divider></p-divider>
 
-    <!-- Construction et classification -->
-    <div class="form-section">
-        <h4 class="section-title">
-            <i class="pi pi-wrench mr-2"></i>
-            Construction et classification
-        </h4>
-
-        <div class="grid">
-            <div class="col-12 md:col-6">
-                <label for="classification" class="field-label">
-                    Société de classification <span class="required">*</span>
-                </label>
-                <p-dropdown
-                    id="classification"
-                    formControlName="classification"
-                    [options]="classificationOptions"
-                    placeholder="Sélectionner la classification"
-                    [filter]="true"
-                    class="w-full"
-                    [class.ng-invalid]="isFieldInvalid('classification')"
-                ></p-dropdown>
-                <small class="field-error" *ngIf="isFieldInvalid('classification')">
-                    La société de classification est obligatoire
-                </small>
-            </div>
-        </div>
-    </div>
 
     <!-- Actions -->
     <div class="form-actions">

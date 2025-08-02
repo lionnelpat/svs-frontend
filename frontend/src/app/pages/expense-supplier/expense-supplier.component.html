@@ -29,7 +29,6 @@
         (expenseSupplierEvent)="onExpenseSupplierEvent($event)"
     ></app-expense-supplier-list>
 
-     Dialog pour le formulaire
     <p-dialog
         [(visible)]="showFormDialog"
         [modal]="true"
@@ -52,3 +51,5 @@
     <!-- Dialog de confirmation -->
     <p-confirmDialog></p-confirmDialog>
 </div>
+
+<p-toast key="{{EXPENSE_SUPPLIER_KEY}}" ></p-toast>

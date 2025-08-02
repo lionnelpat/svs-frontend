@@ -62,15 +62,15 @@ export class ShipService {
         }
 
         if (filter.pavillon) {
-            params = params.set('pavillon', filter.pavillon);
+            params = params.set('ShipFlag', filter.pavillon);
         }
 
         if (filter.compagnieId) {
             params = params.set('compagnieId', filter.compagnieId.toString());
         }
 
-        if (filter.typeNavire) {
-            params = params.set('typeNavire', filter.typeNavire);
+        if (filter.shipType) {
+            params = params.set('shipType', filter.shipType);
         }
 
         if (filter.active !== undefined) {

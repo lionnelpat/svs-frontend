@@ -71,14 +71,14 @@ export class ShipListComponent implements OnInit {
     ];
 
     // Map des compagnies pour affichage
-    private companiesMap = new Map<number, string>();
+    private readonly companiesMap = new Map<number, string>();
 
     constructor(
-        private shipService: ShipService,
-        private companyService: CompanyService,
-        private confirmationService: ConfirmationService,
-        private messageService: MessageService,
-        private logger: LoggerService
+        private readonly shipService: ShipService,
+        private readonly companyService: CompanyService,
+        private readonly confirmationService: ConfirmationService,
+        private readonly messageService: MessageService,
+        private readonly logger: LoggerService
     ) {}
 
     ngOnInit(): void {
@@ -124,7 +124,7 @@ export class ShipListComponent implements OnInit {
         const filter: ShipListFilter = {
             search: this.searchTerm || undefined,
             compagnieId: this.selectedCompany || undefined,
-            typeNavire: this.selectedShipType || undefined,
+            shipType: this.selectedShipType || undefined,
             pavillon: this.selectedFlag || undefined,
             active: this.selectedStatus !== null ? this.selectedStatus : undefined,
             page: this.currentPage,
