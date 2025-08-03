@@ -56,8 +56,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
         Permission.PAYMENT_METHOD_DELETE,
 
         Permission.REPORTS_VIEW,
-        Permission.ANALYTICS_VIEW,
-        Permission.AUDIT_LOGS
+        Permission.ANALYTICS_VIEW
     ],
 
     [UserRole.MANAGER]: [
