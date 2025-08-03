@@ -6,8 +6,8 @@ import { providePrimeNG } from 'primeng/config';
 import { appRoutes } from './app.routes';
 import { SVSTheme } from './app/themes/svs-theme';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { AuthInterceptor } from './app/auth/components/login/interceptors/auth.interceptor';
-import {AuthGuard} from "./app/auth/components/login/guards/auth.guard";
+import { AuthInterceptor } from './app/auth/interceptors/auth.interceptor';
+import {AuthGuard} from "./app/auth/guards/auth.guard";
 
 export const appConfig: ApplicationConfig = {
     providers: [

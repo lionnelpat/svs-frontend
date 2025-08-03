@@ -1,4 +1,4 @@
-import { Role } from '../../../../pages/roles/interfaces/role.interface';
+import { Role } from '../../pages/roles/interfaces/role.interface';
 
 export interface LoginRequest {
     email: string;

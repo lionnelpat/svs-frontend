@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { RippleModule } from 'primeng/ripple';
 import { MenuItem } from 'primeng/api';
 import { LayoutService } from '../service/layout.service';
+import {RoleService} from "../../auth/services/role.service";
 
 @Component({
     // eslint-disable-next-line @angular-eslint/component-selector
@@ -72,7 +73,7 @@ import { LayoutService } from '../service/layout.service';
     providers: [LayoutService]
 })
 export class AppMenuitem {
-    @Input() item!: MenuItem;
+    @Input() item!: any;
 
     @Input() index!: number;
 
@@ -90,7 +91,8 @@ export class AppMenuitem {
 
     constructor(
         public router: Router,
-        private readonly layoutService: LayoutService
+        private readonly layoutService: LayoutService,
+        private readonly roleService: RoleService,
     ) {
         this.menuSourceSubscription = this.layoutService.menuSource$.subscribe((value) => {
             Promise.resolve(null).then(() => {
@@ -130,6 +132,12 @@ export class AppMenuitem {
     }
 
     itemClick(event: Event) {
+
+        if (!this.canAccessItem()) {
+            event.preventDefault();
+            return;
+        }
+
         // avoid processing disabled items
         if (this.item.disabled) {
             event.preventDefault();
@@ -166,5 +174,30 @@ export class AppMenuitem {
         if (this.menuResetSubscription) {
             this.menuResetSubscription.unsubscribe();
         }
+    }
+
+    canAccessItem(): boolean {
+        // Vérifier les rôles requis
+        if (this.item.roles && this.item.roles.length > 0) {
+            if (!this.roleService.hasAnyRole(this.item.roles)) {
+                return false;
+            }
+        }
+
+        // Vérifier les permissions requises
+        if (this.item.permissions && this.item.permissions.length > 0) {
+            if (!this.roleService.hasAnyPermission(this.item.permissions)) {
+                return false;
+            }
+        }
+
+        // Vérifier le rôle minimum
+        if (this.item.minimumRole) {
+            if (!this.roleService.hasMinimumRole(this.item.minimumRole)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

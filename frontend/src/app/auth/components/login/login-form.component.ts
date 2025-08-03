@@ -8,8 +8,8 @@ import { Password } from 'primeng/password';
 import { Message } from 'primeng/message';
 import { Toast } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-import { AuthService } from './services/auth.service';
-import { ErrorResponse, LoginRequest } from './interfaces/auth.interface';
+import { AuthService } from '../../services/auth.service';
+import { ErrorResponse, LoginRequest } from '../../interfaces/auth.interface';
 
 @Component({
     selector: 'app-login-form',

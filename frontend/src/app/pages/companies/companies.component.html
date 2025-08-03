@@ -15,6 +15,7 @@
             <!-- Actions principales -->
             <div class="flex flex-column sm:flex-row gap-2">
                 <p-button
+                    *hasPermission="Permission.COMPANIES_CREATE"
                     icon="pi pi-plus"
                     label="Nouvelle société"
                     (click)="onCreate()"

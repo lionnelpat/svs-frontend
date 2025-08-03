@@ -5,7 +5,7 @@ import {InputTextModule} from "primeng/inputtext";
 import {PaginatorModule} from "primeng/paginator";
 import {ReactiveFormsModule} from "@angular/forms";
 import {Router} from "@angular/router";
-import {AuthService} from "../login/services/auth.service";
+import {AuthService} from "../../services/auth.service";
 import {Ripple} from "primeng/ripple";
 
 @Component({

@@ -3,10 +3,10 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { Router } from '@angular/router';
 import {Observable, throwError, EMPTY, timer, BehaviorSubject} from 'rxjs';
 import { catchError, tap, switchMap } from 'rxjs/operators';
-import { environment } from '../../../../../environments/environment';
+import { environment } from '../../../environments/environment';
 import { AuthResponse, ErrorResponse, LoginRequest, User } from '../interfaces/auth.interface';
 import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY, USER_KEY } from '../constants/constants';
-import { ErrorHandlerService } from '../../../../core/services/error-handler.service';
+import { ErrorHandlerService } from '../../core/services/error-handler.service';
 
 @Injectable({
     providedIn: 'root'
@@ -40,7 +40,7 @@ export class AuthService {
 
     // Propriétés calculées
     public readonly userFullName = computed(() =>
-        this.currentUser()?.fullName || 'Utilisateur'
+        this.currentUser()?.fullName ?? 'Utilisateur'
     );
 
     public readonly userRoles = computed(() =>

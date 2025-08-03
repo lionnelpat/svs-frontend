@@ -5,7 +5,7 @@ import { ButtonDirective } from 'primeng/button';
 import { Menu } from 'primeng/menu';
 import { Avatar } from 'primeng/avatar';
 import { MenuItem } from 'primeng/api';
-import { AuthService } from '../login/services/auth.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
     selector: 'app-user-profile',

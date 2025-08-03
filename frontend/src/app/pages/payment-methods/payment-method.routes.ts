@@ -1,19 +1,11 @@
 // payment-method.routes.ts
 
 import { Routes } from '@angular/router';
+import {PaymentMethodsComponent} from "./payment-methods.component";
 
-export const paymentMethodRoutes: Routes = [
-    {
-        path: '',
-        redirectTo: 'list',
-        pathMatch: 'full'
-    },
+export default [
     {
         path: 'list',
-        loadComponent: () => import('./payment-methods.component').then(c => c.PaymentMethodsComponent),
-        data: {
-            title: 'Méthodes de paiement',
-            breadcrumb: 'Liste'
-        }
+        component: PaymentMethodsComponent
     }
-];
+] as Routes;
