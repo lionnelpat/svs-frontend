@@ -37,6 +37,8 @@ import {Calendar} from "primeng/calendar";
 import {DropdownModule} from "primeng/dropdown";
 import {InputText} from "primeng/inputtext";
 import {logger} from "html2canvas/dist/types/core/__mocks__/logger";
+import {IconField} from "primeng/iconfield";
+import {InputIcon} from "primeng/inputicon";
 
 interface TableLazyLoadEvent {
     first: number;
@@ -65,7 +67,9 @@ interface TableLazyLoadEvent {
         Calendar,
         ReactiveFormsModule,
         DropdownModule,
-        InputText
+        InputText,
+        IconField,
+        InputIcon
     ],
     styleUrl: './user-list.component.scss'
 })
