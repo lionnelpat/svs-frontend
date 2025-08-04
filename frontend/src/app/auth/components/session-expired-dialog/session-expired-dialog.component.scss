@@ -1,0 +1,22 @@
+.custom-dialog-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.custom-dialog-content i {
+  display: block;
+  margin-bottom: 0.5px;
+}
+
+.custom-dialog-content p {
+  display: block;
+}
+
+.footer-dialog {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}

@@ -115,6 +115,7 @@
             label="Modifier"
             icon="pi pi-pencil"
             class="p-button-raised"
+            *hasPermission="Permission.OPERATIONS_UPDATE"
             (click)="onEdit()"
             style="background-color: var(--svs-accent); border-color: var(--svs-accent)"
         ></button>

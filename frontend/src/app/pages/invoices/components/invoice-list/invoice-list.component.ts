@@ -28,9 +28,12 @@ import { MOCK_COMPANIES } from '../../../../shared/data/invoice.data';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { Subject, takeUntil } from 'rxjs';
-import { ExpenseListFilter } from '../../../../shared/models/expense.model';
+import {Expense, ExpenseListFilter, ExpenseStatus} from '../../../../shared/models/expense.model';
 import { InvoiceService } from '../../../service/invoice.service';
 import { CompanyService } from '../../../service/company.service';
+import {Permission} from "../../../../auth/enums/permissions.enum";
+import {HasPermissionDirective} from "../../../../auth/directives";
+import {UserRoleService} from "../../../../auth/services/user-role.service";
 
 @Component({
     selector: 'app-invoice-list',
@@ -49,7 +52,8 @@ import { CompanyService } from '../../../service/company.service';
         ProgressSpinnerModule,
         PaginatorModule,
         IconField,
-        InputIcon
+        InputIcon,
+        HasPermissionDirective
     ],
     providers: [MessageService, ConfirmationService],
     templateUrl: './invoice-list.component.html',
@@ -71,6 +75,7 @@ export class InvoiceListComponent implements OnInit {
     private readonly invoiceService = inject(InvoiceService)
     private readonly companyService = inject(CompanyService)
     private readonly messageService = inject(MessageService)
+    private readonly userRoleService = inject(UserRoleService)
     private readonly confirmationService = inject(ConfirmationService)
 
     // Variables de recherche et filtres
@@ -365,19 +370,38 @@ export class InvoiceListComponent implements OnInit {
         menu.toggle(event);
     }
 
+    canEditInvoice(invoice: Invoice): boolean {
+        return (
+            invoice.statut === InvoiceStatus.BROUILLON ||
+            invoice.statut === InvoiceStatus.ANNULEE) &&
+            this.userRoleService.hasPermission(Permission.INVOICES_UPDATE);
+    }
+
+    canDeleteInvoice(invoice: Invoice): boolean {
+        return !this.userRoleService.hasPermission(Permission.INVOICES_DELETE);
+
+    }
+
+    canEmitInvoice(invoice: Invoice): boolean {
+        return invoice.statut === InvoiceStatus.EMISE;
+    }
+
+    canPaidInvoice(invoice: Invoice): boolean {
+        return invoice.statut === InvoiceStatus.PAYEE;
+    }
+
     getMenuItems(invoice: Invoice): MenuItem[] {
         return [
             {
                 label: 'Marquer comme émise',
                 icon: 'pi pi-send',
-                disabled: invoice.statut === InvoiceStatus.EMISE ||
-                    invoice.statut === InvoiceStatus.PAYEE,
+                disabled: !this.canEmitInvoice,
                 command: () => this.changeStatus(invoice, InvoiceStatus.EMISE)
             },
             {
                 label: 'Marquer comme payée',
                 icon: 'pi pi-check',
-                disabled: invoice.statut === InvoiceStatus.PAYEE,
+                disabled: !this.canPaidInvoice,
                 command: () => this.changeStatus(invoice, InvoiceStatus.PAYEE)
             },
             {
@@ -399,6 +423,7 @@ export class InvoiceListComponent implements OnInit {
             {
                 label: 'Supprimer',
                 icon: 'pi pi-trash',
+                disabled: !this.canDeleteInvoice,
                 styleClass: 'text-red-500',
                 command: () => this.deleteInvoice(invoice)
             }
@@ -613,4 +638,6 @@ export class InvoiceListComponent implements OnInit {
             invoice.statut !== InvoiceStatus.ANNULEE &&
             new Date() > new Date(invoice.dateEcheance);
     }
+
+    protected readonly Permission = Permission;
 }

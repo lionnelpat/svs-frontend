@@ -18,6 +18,8 @@ import { CompanyService } from '../../../service/company.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
+import {Permission} from "../../../../auth/enums/permissions.enum";
+import {HasPermissionDirective} from "../../../../auth/directives";
 
 export interface ShipListEvent {
     type: 'edit' | 'view' | 'delete';
@@ -40,7 +42,8 @@ export interface ShipListEvent {
         BadgeModule,
         ChipModule,
         IconField,
-        InputIcon
+        InputIcon,
+        HasPermissionDirective
     ],
     templateUrl: './ship-list.component.html',
     styleUrls: ['./ship-list.component.scss']
@@ -71,14 +74,14 @@ export class ShipListComponent implements OnInit {
     ];
 
     // Map des compagnies pour affichage
-    private companiesMap = new Map<number, string>();
+    private readonly companiesMap = new Map<number, string>();
 
     constructor(
-        private shipService: ShipService,
-        private companyService: CompanyService,
-        private confirmationService: ConfirmationService,
-        private messageService: MessageService,
-        private logger: LoggerService
+        private readonly shipService: ShipService,
+        private readonly companyService: CompanyService,
+        private readonly confirmationService: ConfirmationService,
+        private readonly messageService: MessageService,
+        private readonly logger: LoggerService
     ) {}
 
     ngOnInit(): void {
@@ -124,7 +127,7 @@ export class ShipListComponent implements OnInit {
         const filter: ShipListFilter = {
             search: this.searchTerm || undefined,
             compagnieId: this.selectedCompany || undefined,
-            typeNavire: this.selectedShipType || undefined,
+            shipType: this.selectedShipType || undefined,
             pavillon: this.selectedFlag || undefined,
             active: this.selectedStatus !== null ? this.selectedStatus : undefined,
             page: this.currentPage,
@@ -193,7 +196,7 @@ export class ShipListComponent implements OnInit {
             acceptLabel: `Oui, ${action}`,
             rejectLabel: 'Annuler',
             accept: () => {
-                this.toggleShipStatus(ship);
+               ship.active ? this.deactivateShipStatus(ship) : this.activeShipStatus(ship);
             }
         });
     }
@@ -214,14 +217,29 @@ export class ShipListComponent implements OnInit {
         });
     }
 
-    private toggleShipStatus(ship: Ship): void {
-        this.shipService.toggleShipStatus(ship.id).subscribe({
+    private activeShipStatus(ship: Ship): void {
+        this.shipService.activeShipStatus(ship.id).subscribe({
             next: (updatedShip) => {
-                const status = updatedShip.active ? 'activé' : 'désactivé';
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Succès',
-                    detail: `Navire "${updatedShip.nom}" ${status} avec succès`
+                    detail: `Navire "${updatedShip.nom}" activé avec succès`
+                });
+                this.loadShips();
+            },
+            error: (error) => {
+                this.logger.error('Erreur lors du changement de statut', error);
+            }
+        });
+    }
+
+    private deactivateShipStatus(ship: Ship): void {
+        this.shipService.deactivateShipStatus(ship.id).subscribe({
+            next: (updatedShip) => {
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Succès',
+                    detail: `Navire "${updatedShip.nom}" désactivé avec succès`
                 });
                 this.loadShips();
             },
@@ -283,4 +301,6 @@ export class ShipListComponent implements OnInit {
     formatNumber(num: number): string {
         return new Intl.NumberFormat('fr-FR').format(num);
     }
+
+    protected readonly Permission = Permission;
 }

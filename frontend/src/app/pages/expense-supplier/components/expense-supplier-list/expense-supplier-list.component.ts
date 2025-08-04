@@ -18,6 +18,8 @@ import {
     ExpenseSupplierListFilter
 } from '../../interfaces/expense-supplier.interface';
 import { ExpenseSupplierService } from '../../service/expense-supplier.service';
+import {Toast} from "primeng/toast";
+import {EXPENSE_SUPPLIER_KEY} from "../../constants/constants";
 
 
 @Component({
@@ -33,7 +35,8 @@ import { ExpenseSupplierService } from '../../service/expense-supplier.service';
         ConfirmDialogModule,
         TooltipModule,
         IconField,
-        InputIcon
+        InputIcon,
+        Toast
     ],
     providers: [ConfirmationService, MessageService],
     standalone: true,
@@ -215,5 +218,6 @@ export class ExpenseSupplierListComponent implements OnInit {
         }
         return 'Aucun fournisseur n\'a été enregistrée pour le moment.';
     }
+    protected readonly EXPENSE_SUPPLIER_KEY = EXPENSE_SUPPLIER_KEY;
 }
 

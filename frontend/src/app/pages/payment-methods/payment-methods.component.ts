@@ -1,59 +1,70 @@
-import { Component, ViewChild } from '@angular/core';
+// payment-methods.component.ts
+
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DialogModule } from 'primeng/dialog';
+import { Subject, takeUntil } from 'rxjs';
+
+// PrimeNG Imports
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { LoggerService } from '../../core/services/logger.service';
-import { Button } from 'primeng/button';
+import { MessageService, ConfirmationService } from 'primeng/api';
+
+// Components
 import { PaymentMethodListComponent } from './components/payment-method-list/payment-method-list.component';
-import { PaymentMethod, PaymentMethodEvent } from './interfaces/payment-method.interface';
-import { PAYMENT_METHOD_KEY } from './constants/constants';
 import { PaymentMethodFormComponent } from './components/payment-method-form/payment-method-form.component';
 
+// Interfaces & Services
+import { PaymentMethod, PaymentMethodEvent, PaymentMethodCreate, PaymentMethodUpdate } from './interfaces/payment-method.interface';
+import { PaymentMethodService } from './service/payment-method.service';
+import {LoggerService} from "../../core/services/logger.service";
+import {PAYMENT_METHOD_CONSTANTS} from "./constants/constants";
 
 @Component({
     selector: 'app-payment-methods',
+    standalone: true,
     imports: [
         CommonModule,
-        DialogModule,
+        ButtonModule,
+        CardModule,
         ToastModule,
         ConfirmDialogModule,
-        Button,
         PaymentMethodListComponent,
         PaymentMethodFormComponent
     ],
-    providers: [ConfirmationService, MessageService],
-    standalone: true,
+    providers: [MessageService, ConfirmationService],
     templateUrl: './payment-methods.component.html',
-    styleUrl: './payment-methods.component.scss'
 })
-export class PaymentMethodsComponent {// État des dialogs
+export class PaymentMethodsComponent implements OnInit, OnDestroy {
+    private readonly destroy$ = new Subject<void>();
+
+    // État du dialog
     showFormDialog = false;
-    showDetailDialog = false;
-
-    @ViewChild(PaymentMethodListComponent) paymentMethodList: PaymentMethodListComponent | undefined;
-
-    // Données
+    formMode: 'create' | 'edit' | 'view' = 'create';
     selectedPaymentMethod: PaymentMethod | null = null;
 
-    // Mode du formulaire
-    isEditMode = false;
-
     constructor(
-        private logger: LoggerService
-    ) {
+        private readonly paymentMethodService: PaymentMethodService,
+        private readonly messageService: MessageService,
+        private readonly confirmationService: ConfirmationService,
+        private readonly logger: LoggerService
+    ) {}
+
+    ngOnInit(): void {
+        this.logger.info('PaymentMethodsComponent initialisé');
     }
 
-    get formDialogTitle(): string {
-        return this.isEditMode ? 'Modifier la méthode de paiement' : 'Nouvelle méthode de paiement';
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     /**
-     * Gestionnaire d'événements de la liste des companies
+     * Gère les événements émis par la liste des méthodes de paiement
      */
-    onPaymentMethodEvent(event: PaymentMethodEvent): void {
-        this.logger.debug('Événement méthode paiement reçu', event);
+    handlePaymentMethodEvent(event: PaymentMethodEvent): void {
+        this.logger.debug('Événement reçu:', event);
 
         switch (event.type) {
             case 'create':
@@ -63,111 +74,150 @@ export class PaymentMethodsComponent {// État des dialogs
                 this.openEditDialog(event.paymentMethod!);
                 break;
             case 'view':
-                this.openDetailDialog(event.paymentMethod!);
+                this.openViewDialog(event.paymentMethod!);
                 break;
-            default:
-                this.logger.warn('Type d\'événement non géré', event.type);
+            case 'delete':
+                this.confirmDelete(event.paymentMethod!);
+                break;
         }
     }
 
     /**
      * Ouvre le dialog de création
      */
-    private openCreateDialog(): void {
+    openCreateDialog(): void {
+        this.formMode = 'create';
         this.selectedPaymentMethod = null;
-        this.isEditMode = false;
         this.showFormDialog = true;
-        this.logger.info('Dialog de création de fournisseur ouvert');
     }
 
     /**
      * Ouvre le dialog d'édition
      */
-    private openEditDialog(paymentMethod: PaymentMethod): void {
+    openEditDialog(paymentMethod: PaymentMethod): void {
+        this.formMode = 'edit';
         this.selectedPaymentMethod = paymentMethod;
-        this.isEditMode = true;
         this.showFormDialog = true;
-        this.logger.info(`Dialog d'édition ouvert pour le fournisseur: ${paymentMethod.nom}`);
     }
 
     /**
-     * Ouvre le dialog de détails
+     * Ouvre le dialog de visualisation
      */
-    private openDetailDialog(paymentMethod: PaymentMethod): void {
+    openViewDialog(paymentMethod: PaymentMethod): void {
+        this.formMode = 'view';
         this.selectedPaymentMethod = paymentMethod;
-        this.showDetailDialog = true;
-        this.logger.info(`Dialog de détails ouvert pour le fournisseur: ${paymentMethod.nom}`);
+        this.showFormDialog = true;
     }
 
     /**
-     * Gestionnaire de soumission du formulaire
+     * Confirme la suppression d'une méthode de paiement
      */
-    onFormSubmit(paymentMethod: PaymentMethod): void {
-        this.logger.info('Formulaire soumis avec succès', { id: paymentMethod.id, nom: paymentMethod.nom });
-        this.closeFormDialog();
-
-        // Le rafraîchissement de la liste est géré par le composant CompanyListComponent
-        this.paymentMethodList?.loadPaymentMethods()
+    confirmDelete(paymentMethod: PaymentMethod): void {
+        this.confirmationService.confirm({
+            message: `${PAYMENT_METHOD_CONSTANTS.MESSAGES.DELETE_CONFIRM}<br><strong>${paymentMethod.nom}</strong>`,
+            header: 'Confirmation de suppression',
+            icon: 'pi pi-exclamation-triangle',
+            acceptLabel: 'Supprimer',
+            rejectLabel: 'Annuler',
+            accept: () => this.deletePaymentMethod(paymentMethod.id),
+            reject: () => {
+                this.logger.debug('Suppression annulée');
+            }
+        });
     }
 
     /**
-     * Gestionnaire d'annulation du formulaire
+     * Supprime une méthode de paiement
+     */
+    private deletePaymentMethod(id: number): void {
+        this.paymentMethodService.deletePaymentMethod(id)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: () => {
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Succès',
+                        detail: PAYMENT_METHOD_CONSTANTS.MESSAGES.DELETE_SUCCESS
+                    });
+                    this.logger.info(`Méthode de paiement ${id} supprimée`);
+                },
+                error: (error) => {
+                    this.logger.error('Erreur lors de la suppression:', error);
+                }
+            });
+    }
+
+    /**
+     * Gère la visibilité du dialog
+     */
+    onDialogVisibilityChange(visible: boolean): void {
+        this.showFormDialog = visible;
+        if (!visible) {
+            this.selectedPaymentMethod = null;
+        }
+    }
+
+    /**
+     * Gère la sauvegarde d'une méthode de paiement
+     */
+    onPaymentMethodSave(data: PaymentMethodCreate | PaymentMethodUpdate): void {
+        if (this.formMode === 'create') {
+            this.createPaymentMethod(data as PaymentMethodCreate);
+        } else if (this.formMode === 'edit' && this.selectedPaymentMethod) {
+            this.updatePaymentMethod(this.selectedPaymentMethod.id, data as PaymentMethodUpdate);
+        }
+    }
+
+    /**
+     * Crée une nouvelle méthode de paiement
+     */
+    private createPaymentMethod(data: PaymentMethodCreate): void {
+        this.paymentMethodService.createPaymentMethod(data)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: () => {
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Succès',
+                        detail: PAYMENT_METHOD_CONSTANTS.MESSAGES.CREATE_SUCCESS
+                    });
+                    this.showFormDialog = false;
+                    this.logger.info('Méthode de paiement créée:', data);
+                },
+                error: (error) => {
+                    this.logger.error('Erreur lors de la création:', error);
+                }
+            });
+    }
+
+    /**
+     * Met à jour une méthode de paiement
+     */
+    private updatePaymentMethod(id: number, data: PaymentMethodUpdate): void {
+        this.paymentMethodService.updatePaymentMethod(id, data)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: () => {
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Succès',
+                        detail: PAYMENT_METHOD_CONSTANTS.MESSAGES.UPDATE_SUCCESS
+                    });
+                    this.showFormDialog = false;
+                    this.logger.info(`Méthode de paiement ${id} mise à jour:`, data);
+                },
+                error: (error) => {
+                    this.logger.error('Erreur lors de la mise à jour:', error);
+                }
+            });
+    }
+
+    /**
+     * Gère l'annulation du formulaire
      */
     onFormCancel(): void {
-        this.logger.info('Formulaire annulé');
-        this.closeFormDialog();
-    }
-
-    /**
-     * Fermeture du dialog de formulaire
-     */
-    onFormDialogHide(): void {
-        this.closeFormDialog();
-    }
-
-    /**
-     * Ferme le dialog de formulaire
-     */
-    private closeFormDialog(): void {
         this.showFormDialog = false;
         this.selectedPaymentMethod = null;
-        this.isEditMode = false;
+        this.logger.debug('Formulaire annulé');
     }
-
-    /**
-     * Gestionnaire de clic sur édition depuis les détails
-     */
-    onDetailEditClick(paymentMethod: PaymentMethod): void {
-        this.logger.info(`Passage des détails à l'édition pour: ${paymentMethod.nom}`);
-        this.showDetailDialog = false;
-        this.openEditDialog(paymentMethod);
-    }
-
-    /**
-     * Gestionnaire de fermeture des détails
-     */
-    onDetailCloseClick(): void {
-        this.closeDetailDialog();
-    }
-
-    /**
-     * Fermeture du dialog de détails
-     */
-    onDetailDialogHide(): void {
-        this.closeDetailDialog();
-    }
-
-    /**
-     * Ferme le dialog de détails
-     */
-    private closeDetailDialog(): void {
-        this.showDetailDialog = false;
-        this.selectedPaymentMethod = null;
-    }
-
-    onCreate() {
-        this.openCreateDialog();
-    }
-
-    protected readonly PAYMENT_METHOD_KEY = PAYMENT_METHOD_KEY;
 }

@@ -8,6 +8,8 @@ import { AvatarModule } from 'primeng/avatar';
 import { Operation } from '../../../../shared/models/operation.model';
 import { OperationService } from '../../../service/operation.service';
 import { CurrencyUtils } from '../../../../shared/utils';
+import {Permission} from "../../../../auth/enums/permissions.enum";
+import {HasPermissionDirective} from "../../../../auth/directives";
 
 @Component({
     selector: 'app-operation-detail',
@@ -17,7 +19,8 @@ import { CurrencyUtils } from '../../../../shared/utils';
         ButtonModule,
         TagModule,
         DividerModule,
-        AvatarModule
+        AvatarModule,
+        HasPermissionDirective
     ],
     templateUrl: './operation-detail.component.html',
     styleUrls: ['./operation-detail.component.scss'],
@@ -59,4 +62,6 @@ export class OperationDetailComponent {
     onClose(): void {
         this.closeClick.emit();
     }
+
+    protected readonly Permission = Permission;
 }

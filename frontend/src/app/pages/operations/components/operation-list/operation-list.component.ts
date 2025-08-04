@@ -16,9 +16,13 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { OPERATION_KEY } from '../../constants/constant';
+import {Toast} from "primeng/toast";
+import {PAYMENT_METHOD_KEY} from "../../../payment-methods/constants/constants";
+import {Permission} from "../../../../auth/enums/permissions.enum";
+import {HasPermissionDirective} from "../../../../auth/directives";
 
 export interface OperationListEvent {
-    type: 'edit' | 'view' | 'delete';
+    type: 'create' | 'edit' | 'view' | 'delete';
     operation?: Operation;
 }
 
@@ -36,7 +40,9 @@ export interface OperationListEvent {
         ConfirmDialogModule,
         TooltipModule,
         IconField,
-        InputIcon
+        InputIcon,
+        Toast,
+        HasPermissionDirective
     ],
     templateUrl: './operation-list.component.html',
     styleUrls: ['./operation-list.component.scss']
@@ -112,11 +118,11 @@ export class OperationListComponent implements OnInit {
     }
 
 
-    // onCreate(): void {
-    //     console.log('🔄 onCreate() appelé dans OperationListComponent'); // Debug
-    //     this.operationEvent.emit({ type: 'create' });
-    //     console.log('📤 Événement create émis'); // Debug
-    // }
+    onCreate(): void {
+        console.log('🔄 onCreate() appelé dans OperationListComponent'); // Debug
+        this.operationEvent.emit({ type: 'create' });
+        console.log('📤 Événement create émis'); // Debug
+    }
 
     onView(operation: Operation): void {
         console.log('🔄 onView() appelé pour:', operation.nom); // Debug
@@ -250,4 +256,6 @@ export class OperationListComponent implements OnInit {
     }
 
     protected readonly OPERATION_KEY = OPERATION_KEY;
+    protected readonly PAYMENT_METHOD_KEY = PAYMENT_METHOD_KEY;
+    protected readonly Permission = Permission;
 }

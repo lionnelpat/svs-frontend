@@ -355,6 +355,7 @@
                 <td *ngIf="showActions">
                     <div class="flex gap-1">
                         <p-button
+                            *hasPermission="Permission.EXPENSES_UPDATE"
                             icon="pi pi-pencil"
                             severity="warn"
                             [text]="true"
@@ -366,6 +367,7 @@
 
                         <p-button
                             #menuButton
+                            *hasPermission="Permission.EXPENSES_UPDATE"
                             icon="pi pi-ellipsis-v"
                             severity="secondary"
                             [text]="true"
@@ -415,8 +417,9 @@
         </div>
 
         <!-- Actions sur la sélection -->
-        <div class="flex gap-2" *ngIf="selectionMode && selectedExpenses.length > 0">
+        <div class="flex gap-2" *ngIf="selectionMode && selectedExpenses.length > 0" >
             <p-button
+                *hasPermission="Permission.EXPENSES_APPROVED"
                 icon="pi pi-check"
                 label="Approuver la sélection"
                 severity="success"
@@ -425,6 +428,7 @@
                 pTooltip="Approuver les dépenses sélectionnées">
             </p-button>
             <p-button
+                *hasPermission="Permission.EXPENSES_REJECTED"
                 icon="pi pi-times"
                 label="Rejeter la sélection"
                 severity="danger"

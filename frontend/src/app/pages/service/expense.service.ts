@@ -26,7 +26,7 @@ import { ApiResponse } from '../../core/interfaces/api-response.interface';
     providedIn: 'root'
 })
 export class ExpenseService {
-    private readonly apiUrl = `${environment.apiBaseUrl}/${environment.apiVersion}/expenses`;
+    private readonly apiUrl = `${environment.apiBaseUrl}/expenses`;
 
     constructor(
         private readonly http: HttpClient,

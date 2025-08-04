@@ -1,0 +1,319 @@
+<!-- src/app/pages/users/components/user-form/user-form.component.html -->
+<form [formGroup]="userForm" (ngSubmit)="onSave()" class="user-form">
+    <!-- En-tête du formulaire -->
+    <div class="form-header p-3 border-bottom-1 border-surface-200">
+        <h6 class="m-0 text-900 font-semibold">
+            {{ isEditMode ? 'Modifier l\'utilisateur' : 'Nouvel utilisateur' }}
+        </h6>
+        <small class="text-500">
+            {{ isEditMode ? 'Modifiez les informations de l\'utilisateur' : 'Saisissez les informations du nouvel utilisateur' }}
+        </small>
+    </div>
+
+    <!-- Corps du formulaire -->
+    <div class="form-content p-4">
+        <div class="grid">
+            <!-- Informations de base -->
+            <div class="col-12">
+                <h6 class="text-900 font-medium mb-3">Informations personnelles</h6>
+            </div>
+
+            <!-- Nom d'utilisateur -->
+            <div class="col-12 md:col-6">
+                <div class="field">
+                    <label for="username" class="block text-900 font-medium mb-2">
+                        Nom d'utilisateur <span class="text-red-500">*</span>
+                    </label>
+                    <input
+                        pInputText
+                        id="username"
+                        formControlName="username"
+                        placeholder="Nom d'utilisateur unique"
+                        [class]="getFieldClass('username')"
+                        class="w-full" />
+                    <small
+                        *ngIf="hasFieldError('username')"
+                        class="p-error block mt-1">
+                        {{ getFieldError('username') }}
+                    </small>
+                </div>
+            </div>
+
+            <!-- Email -->
+            <div class="col-12 md:col-6">
+                <div class="field">
+                    <label for="email" class="block text-900 font-medium mb-2">
+                        Adresse email <span class="text-red-500">*</span>
+                    </label>
+                    <input
+                        pInputText
+                        id="email"
+                        type="email"
+                        formControlName="email"
+                        placeholder="email@exemple.com"
+                        [class]="getFieldClass('email')"
+                        class="w-full" />
+                    <small
+                        *ngIf="hasFieldError('email')"
+                        class="p-error block mt-1">
+                        {{ getFieldError('email') }}
+                    </small>
+                </div>
+            </div>
+
+            <!-- Prénom -->
+            <div class="col-12 md:col-6">
+                <div class="field">
+                    <label for="firstName" class="block text-900 font-medium mb-2">
+                        Prénom <span class="text-red-500">*</span>
+                    </label>
+                    <input
+                        pInputText
+                        id="firstName"
+                        formControlName="firstName"
+                        placeholder="Prénom"
+                        [class]="getFieldClass('firstName')"
+                        class="w-full" />
+                    <small
+                        *ngIf="hasFieldError('firstName')"
+                        class="p-error block mt-1">
+                        {{ getFieldError('firstName') }}
+                    </small>
+                </div>
+            </div>
+
+            <!-- Nom -->
+            <div class="col-12 md:col-6">
+                <div class="field">
+                    <label for="lastName" class="block text-900 font-medium mb-2">
+                        Nom <span class="text-red-500">*</span>
+                    </label>
+                    <input
+                        pInputText
+                        id="lastName"
+                        formControlName="lastName"
+                        placeholder="Nom de famille"
+                        [class]="getFieldClass('lastName')"
+                        class="w-full" />
+                    <small
+                        *ngIf="hasFieldError('lastName')"
+                        class="p-error block mt-1">
+                        {{ getFieldError('lastName') }}
+                    </small>
+                </div>
+            </div>
+
+            <!-- Téléphone -->
+            <div class="col-12 md:col-6">
+                <div class="field">
+                    <label for="phone" class="block text-900 font-medium mb-2">
+                        Téléphone
+                    </label>
+                    <input
+                        pInputText
+                        id="phone"
+                        formControlName="phone"
+                        placeholder="+221 77 123 45 67"
+                        [class]="getFieldClass('phone')"
+                        class="w-full" />
+                    <small
+                        *ngIf="hasFieldError('phone')"
+                        class="p-error block mt-1">
+                        {{ getFieldError('phone') }}
+                    </small>
+                    <small class="text-500 block mt-1">
+                        Format: +221 XX XXX XX XX
+                    </small>
+                </div>
+            </div>
+
+            <!-- Statut et vérification -->
+<!--            <div class="col-12 md:col-6">-->
+<!--                <div class="field">-->
+<!--                    <label class="block text-900 font-medium mb-3">Statut du compte</label>-->
+<!--                    <div class="flex flex-column gap-2">-->
+<!--                        <div class="flex align-items-center">-->
+<!--                            <p-checkbox-->
+<!--                                formControlName="isActive"-->
+<!--                                binary="true"-->
+<!--                                inputId="isActive">-->
+<!--                            </p-checkbox>-->
+<!--                            <label for="isActive" id="isActive" class="ml-2">Compte actif</label>-->
+<!--                        </div>-->
+<!--                        <div class="flex align-items-center">-->
+<!--                            <p-checkbox-->
+<!--                                formControlName="isEmailVerified"-->
+<!--                                binary="true"-->
+<!--                                inputId="isEmailVerified">-->
+<!--                            </p-checkbox>-->
+<!--                            <label for="isEmailVerified" id="isEmailVerified" class="ml-2">Email vérifié</label>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+
+            <!-- Rôles -->
+            <div class="col-12" *ngIf="canManageRoles">
+                <div class="field">
+                    <label for="roles" id="roles" class="block text-900 font-medium mb-2">
+                        Rôles <span class="text-red-500">*</span>
+                    </label>
+                    <p-multiSelect
+                        [options]="availableRoles"
+                        [ngModel]="selectedRoles"
+                        (ngModelChange)="onRolesChange($event)"
+                        [ngModelOptions]="{standalone: true}"
+                        optionLabel="name"
+                        placeholder="Sélectionner les rôles"
+                        [showToggleAll]="false"
+                        [appendTo]="'body'"
+                        [baseZIndex]="1100"
+                        class="w-full">
+
+                        <ng-template let-role pTemplate="item">
+                            <div class="flex align-items-center gap-2">
+                                <span class="font-medium">{{ role.name }}</span>
+                                <small class="text-500">{{ role.description }}</small>
+                            </div>
+                        </ng-template>
+                    </p-multiSelect>
+                    <small
+                        *ngIf="hasFieldError('roleIds')"
+                        class="p-error block mt-1">
+                        {{ getFieldError('roleIds') }}
+                    </small>
+                </div>
+            </div>
+
+            <!-- Section mot de passe -->
+            <div class="col-12">
+                <p-divider></p-divider>
+
+                <div class="flex align-items-center justify-content-between mb-3">
+                    <h6 class="text-900 font-medium m-0">
+                        {{ isEditMode ? 'Modifier le mot de passe' : 'Mot de passe' }}
+                    </h6>
+                    <button
+                        *ngIf="isEditMode"
+                        type="button"
+                        pButton
+                        pRipple
+                        [label]="showPasswordSection ? 'Annuler' : 'Changer'"
+                        [icon]="showPasswordSection ? 'pi pi-times' : 'pi pi-key'"
+                        class="p-button-text p-button-sm"
+                        (click)="togglePasswordSection()">
+                    </button>
+                </div>
+
+                <!-- Formulaire de mot de passe -->
+                <div
+                    *ngIf="!isEditMode || showPasswordSection"
+                    [formGroup]="passwordForm"
+                    class="grid">
+
+                    <!-- Nouveau mot de passe -->
+                    <div class="col-12 md:col-12">
+                        <div class="field">
+                            <label for="password" id="password" class="block text-900 font-medium mb-2">
+                                {{ isEditMode ? 'Nouveau mot de passe' : 'Mot de passe' }}
+                                <span class="text-red-500" *ngIf="passwordRequired">*</span>
+                            </label>
+                            <p-password
+                                formControlName="password"
+                                inputId="password"
+                                placeholder="Mot de passe sécurisé"
+                                [class]="getFieldClass('password', passwordForm)"
+                                [toggleMask]="true"
+                                [feedback]="true"
+                                promptLabel="Saisissez un mot de passe"
+                                weakLabel="Faible"
+                                mediumLabel="Moyen"
+                                strongLabel="Fort"
+                                class="">
+                            </p-password>
+                            <small
+                                *ngIf="hasFieldError('password', passwordForm)"
+                                class="p-error block mt-1">
+                                {{ getFieldError('password', passwordForm) }}
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Confirmation mot de passe -->
+                    <div class="col-12 md:col-12">
+                        <div class="field">
+                            <label for="confirmPassword" id="confirmPassword" class="block text-900 font-medium mb-2">
+                                Confirmer le mot de passe
+                                <span class="text-red-500" *ngIf="passwordRequired">*</span>
+                            </label>
+                            <p-password
+                                formControlName="confirmPassword"
+                                inputId="confirmPassword"
+                                placeholder="Confirmer le mot de passe"
+                                [class]="getFieldClass('confirmPassword', passwordForm)"
+                                [toggleMask]="true"
+                                [feedback]="false"
+                                class="w-full">
+                            </p-password>
+                            <small
+                                *ngIf="hasFieldError('confirmPassword', passwordForm)"
+                                class="p-error block mt-1">
+                                {{ getFieldError('confirmPassword', passwordForm) }}
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Règles de mot de passe -->
+                    <div class="col-12">
+                        <div class="bg-blue-50 border-1 border-blue-200 p-3 border-round">
+                            <h6 class="text-blue-800 m-0 mb-2">Règles de mot de passe :</h6>
+                            <ul class="text-blue-700 text-sm m-0 pl-3">
+                                <li>Au moins {{ VALIDATION_RULES.PASSWORD.MIN_LENGTH }} caractères</li>
+                                <li>Au moins une lettre majuscule</li>
+                                <li>Au moins une lettre minuscule</li>
+                                <li>Au moins un chiffre</li>
+                                <li>Au moins un caractère spécial ($!%*?&)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pied du formulaire avec actions -->
+    <div class="form-footer flex justify-content-end gap-2 p-3 border-top-1 border-surface-200">
+        <button
+            type="button"
+            pButton
+            pRipple
+            label="Annuler"
+            icon="pi pi-times"
+            class="p-button-text"
+            [disabled]="loading"
+            (click)="onCancel()">
+        </button>
+
+        <button
+            type="submit"
+            pButton
+            pRipple
+            [label]="isEditMode ? 'Mettre à jour' : 'Créer'"
+            [icon]="isEditMode ? 'pi pi-check' : 'pi pi-plus'"
+            [loading]="loading"
+            class="p-button-primary">
+        </button>
+    </div>
+</form>
+
+<!-- Messages d'aide contextuelle -->
+<div class="help-section mt-3" *ngIf="!isEditMode">
+    <p-panel header="Aide" [toggleable]="true" [collapsed]="true">
+        <div class="text-sm text-600">
+            <p><strong>Nom d'utilisateur :</strong> Doit être unique et contenir uniquement des lettres, chiffres, tirets et underscores.</p>
+            <p><strong>Email :</strong> Sera utilisé pour les notifications et la récupération de mot de passe.</p>
+            <p><strong>Rôles :</strong> Déterminent les permissions de l'utilisateur dans le système.</p>
+            <p><strong>Statut :</strong> Un compte inactif ne peut pas se connecter.</p>
+        </div>
+    </p-panel>
+</div>

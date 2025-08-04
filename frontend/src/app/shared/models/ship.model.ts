@@ -38,7 +38,7 @@ export interface UpdateShipRequest extends CreateShipRequest {
 export interface ShipListFilter {
     search?: string;
     compagnieId?: number;
-    typeNavire?: string;
+    shipType?: string;
     pavillon?: string;
     active?: boolean;
     page?: number;

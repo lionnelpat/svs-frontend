@@ -2,19 +2,21 @@ import { Routes } from '@angular/router';
 import { AppLayout } from './app/layout/component/app.layout';
 import { DashboardComponent } from './app/pages/dashboard/dashboard.component';
 import { Notfound } from './app/pages/notfound/notfound';
-import { expenseCategoryRoutes } from './app/pages/expense-category/expense-category.routes';
-import { expenseSupplierRoutes } from './app/pages/expense-supplier/expense-supplier.routes';
-import { paymentMethodRoutes } from './app/pages/payment-methods/payment-method.routes';
 import { LoginFormComponent } from './app/auth/components/login/login-form.component';
-import { GuestGuard } from './app/auth/components/login/guards/guest.guard';
-import { AuthGuard } from './app/auth/components/login/guards/auth.guard';
-import { RolesComponent } from './app/pages/roles/roles.component';
-import { RoleGuard } from './app/auth/components/login/guards/role.guard';
+import { AdminGuard } from './app/auth/guards/admin.guard';
+import { AuthGuard } from './app/auth/guards/auth.guard';
+import {UnauthorizedComponent} from "./app/pages/unauthorized/unauthorized";
+import {UserRole} from "./app/auth/enums/roles.enum";
+import {EnhancedRoleGuard} from "./app/auth/guards/enhanced-role.guard";
+import {Permission} from "./app/auth/enums/permissions.enum";
+import {PermissionGuard} from "./app/auth/guards/permission.guard";
+import {UsersComponent} from "./app/pages/users/users.component";
+
 
 export const appRoutes: Routes = [
+    // Routes d'authentification
     {
         path: 'auth',
-        canActivate: [GuestGuard], // Empêche l'accès si déjà connecté
         children: [
             {
                 path: 'login',
@@ -27,13 +29,19 @@ export const appRoutes: Routes = [
             }
         ]
     },
+
+    // Routes protégées
     {
         path: '',
         component: AppLayout,
-        canActivate: [AuthGuard], // Protège toutes les routes enfants
+        canActivate: [AuthGuard],
         canActivateChild: [AuthGuard],
         children: [
-            { path: '', component: DashboardComponent },
+            // Dashboard - Accessible à tous les utilisateurs connectés
+            {
+                path: '',
+                component: DashboardComponent
+            },
             {
                 path: 'dashboard',
                 loadChildren: () => import('./app/pages/dashboard/dashboard.module').then(m => m.DashboardModule),
@@ -41,64 +49,167 @@ export const appRoutes: Routes = [
                     breadcrumb: 'Tableau de Bord'
                 }
             },
+
+            // Gestion des entreprises - Lecture pour tous, écriture pour MANAGER+
             {
                 path: 'companies',
-                loadChildren: () => import('./app/pages/companies/companies.routes')
-            },
-            {
-                path: 'invoices',
-                loadChildren: () => import('./app/pages/invoices/invoices.routes')
-            },
-            {
-                path: 'operations',
-                loadChildren: () => import('./app/pages/operations/operations.routes')
-            },
-            {
-                path: 'ships',
-                loadChildren: () => import('./app/pages/ships/ships.routes')
-            },
-            {
-                path: 'expenses',
-                loadChildren: () => import('./app/pages/expenses/expenses.routes')
-            },
-            {
-                path: 'categories',
-                loadChildren: () => expenseCategoryRoutes
-            },
-            {
-                path: 'suppliers',
-                loadChildren: () => expenseSupplierRoutes
-            },
-            {
-                path: 'payment-methods',
-                loadChildren: () => paymentMethodRoutes
-            },
-            {
-                path: 'roles',
-                component: RolesComponent,
-                canActivate: [RoleGuard], // Optionnel: protection par rôle
+                loadChildren: () => import('./app/pages/companies/companies.routes'),
+                canActivate: [PermissionGuard],
                 data: {
-                    breadcrumb: 'Gestion des Rôles',
-                    roles: [ ] // Rôles autorisés
+                    breadcrumb: 'Entreprises',
+                    permissions: [Permission.COMPANIES_READ]
                 }
             },
 
+            // Gestion des factures - Selon les permissions
+            {
+                path: 'invoices',
+                loadChildren: () => import('./app/pages/invoices/invoices.routes'),
+                canActivate: [PermissionGuard],
+                data: {
+                    breadcrumb: 'Factures',
+                    permissions: [Permission.INVOICES_READ]
+                }
+            },
+
+            // Gestion des opérations - USER minimum
+            {
+                path: 'operations',
+                loadChildren: () => import('./app/pages/operations/operations.routes'),
+                canActivate: [EnhancedRoleGuard],
+                data: {
+                    breadcrumb: 'Opérations',
+                    minimumRole: UserRole.USER
+                }
+            },
+
+            // Gestion des navires - Permissions spécifiques
+            {
+                path: 'ships',
+                loadChildren: () => import('./app/pages/ships/ships.routes'),
+                canActivate: [PermissionGuard],
+                data: {
+                    breadcrumb: 'Navires',
+                    permissions: [Permission.SHIPS_READ]
+                }
+            },
+
+            // Gestion des dépenses - MANAGER minimum
+            {
+                path: 'expenses',
+                loadChildren: () => import('./app/pages/expenses/expenses.routes'),
+                canActivate: [EnhancedRoleGuard],
+                data: {
+                    breadcrumb: 'Dépenses',
+                    permissions: [Permission.EXPENSES_READ]
+                }
+            },
+
+            // Administration des catégories - ADMIN requis
+            {
+                path: 'categories',
+                loadChildren: () => import('./app/pages/expense-category/expense-category.routes'),
+                canActivate: [AdminGuard],
+                data: {
+                    breadcrumb: 'Catégories'
+                }
+            },
+
+            // Administration des fournisseurs - MANAGER minimum
+            {
+                path: 'suppliers',
+                loadChildren: () => import('./app/pages/expense-supplier/expense-supplier.routes'),
+                canActivate: [EnhancedRoleGuard],
+                data: {
+                    breadcrumb: 'Fournisseurs',
+                    minimumRole: UserRole.MANAGER
+                }
+            },
+
+            // Méthodes de paiement - ADMIN requis
+            {
+                path: 'payment-methods',
+                loadChildren: () => import('./app/pages/payment-methods/payment-method.routes'),
+                canActivate: [AdminGuard],
+                data: {
+                    breadcrumb: 'Méthodes de Paiement'
+                }
+            },
+
+            // Gestion des rôles - SUPER_ADMIN uniquement
+            {
+                path: 'roles',
+                loadChildren: () => import('./app/pages/roles/roles.routes'),
+                canActivate: [EnhancedRoleGuard],
+                data: {
+                    breadcrumb: 'Gestion des Rôles',
+                    roles: [UserRole.ADMIN]
+                }
+            },
+
+            // Gestion des utilisateurs - ADMIN minimum
+            {
+                path: 'users',
+                loadChildren: () => import('./app/pages/users/users.routes'),
+                canActivate: [EnhancedRoleGuard],
+                data: {
+                    breadcrumb: 'Utilisateurs',
+                    permissions: [Permission.USERS_READ],
+                    title: 'Gestion des Utilisateurs'
+                }
+            },
+
+            // Rapports - Permissions spécifiques
+            // {
+            //     path: 'reports',
+            //     loadChildren: () => import('./app/pages/reports/reports.routes'),
+            //     canActivate: [PermissionGuard],
+            //     data: {
+            //         breadcrumb: 'Rapports',
+            //         permissions: [Permission.REPORTS_VIEW]
+            //     }
+            // },
+
+            // Analytics - MANAGER minimum
+            // {
+            //     path: 'analytics',
+            //     loadChildren: () => import('./app/pages/analytics/analytics.routes'),
+            //     canActivate: [PermissionGuard],
+            //     data: {
+            //         breadcrumb: 'Analyses',
+            //         permissions: [Permission.ANALYTICS_VIEW]
+            //     }
+            // },
+
+            // Administration système - SUPER_ADMIN uniquement
+            // {
+            //     path: 'admin',
+            //     loadChildren: () => import('./app/pages/admin/admin.routes'),
+            //     canActivate: [EnhancedRoleGuard],
+            //     data: {
+            //         breadcrumb: 'Administration',
+            //         roles: [UserRole.SUPER_ADMIN]
+            //     }
+            // }
         ]
     },
-    // Page d'erreur 404
+
+    // Pages d'erreur
     {
         path: 'notfound',
         component: Notfound
     },
-
-    // Redirection par défaut vers la page de connexion
     {
-        path: '',
-        redirectTo: '/auth/login',
-        pathMatch: 'full'
+        path: 'unauthorized',
+        component: UnauthorizedComponent
     },
 
-    // Toute autre route non trouvée
+    // Redirections
+    {
+        path: '',
+        redirectTo: '/dashboard',
+        pathMatch: 'full'
+    },
     {
         path: '**',
         redirectTo: '/notfound'

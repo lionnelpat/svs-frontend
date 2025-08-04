@@ -12,6 +12,8 @@ import { CompanyListEvent } from '../../shared/interfaces/commons.interfaces';
 import { Company } from '../../shared/models';
 import { Button } from 'primeng/button';
 import { COMPANY_KEY } from './constants/constants';
+import {Permission} from "../../auth/enums/permissions.enum";
+import {HasPermissionDirective} from "../../auth/directives";
 
 @Component({
   selector: 'app-companies',
@@ -23,7 +25,8 @@ import { COMPANY_KEY } from './constants/constants';
         CompanyListComponent,
         CompanyFormComponent,
         CompanyDetailComponent,
-        Button
+        Button,
+        HasPermissionDirective
     ],
     providers: [ConfirmationService, MessageService],
     standalone: true,
@@ -171,4 +174,5 @@ export class CompaniesComponent {// État des dialogs
     }
 
     protected readonly COMPANY_KEY = COMPANY_KEY;
+    protected readonly Permission = Permission;
 }

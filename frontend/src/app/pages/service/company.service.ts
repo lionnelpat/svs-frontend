@@ -19,7 +19,7 @@ import { environment } from '../../../environments/environment';
 })
 export class CompanyService {
     // private readonly baseUrl = 'companies';
-    private readonly apiBaseUrl = `${environment.apiBaseUrl}/${environment.apiVersion}`;
+    private readonly apiBaseUrl = `${environment.apiBaseUrl}/companies`;
 
     private readonly  headers = new HttpHeaders({
         'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ export class CompanyService {
             params = params.set('active', filter.active.toString());
         }
 
-        return this.http.get<any>(`${this.apiBaseUrl}/companies`, {
+        return this.http.get<any>(`${this.apiBaseUrl}`, {
             headers: this.headers,
             params
         }).pipe(
@@ -68,32 +68,32 @@ export class CompanyService {
     }
 
     getCompanyById(id: number): Observable<Company> {
-        return this.http.get<Company>(`${this.apiBaseUrl}/companies/${id}`).pipe(
+        return this.http.get<Company>(`${this.apiBaseUrl}/${id}`).pipe(
             catchError(err => this.handleError(err, `Chargement compagnie ID: ${id}`))
         );
     }
 
     createCompany(request: CreateCompanyRequest): Observable<Company> {
-        return this.http.post<Company>(`${this.apiBaseUrl}/companies`, request).pipe(
+        return this.http.post<Company>(`${this.apiBaseUrl}`, request).pipe(
             catchError(err => this.handleError(err, 'Création compagnie'))
         );
     }
 
     updateCompany(request: UpdateCompanyRequest): Observable<Company> {
-        return this.http.put<Company>(`${this.apiBaseUrl}/companies/${request.id}`, request).pipe(
+        return this.http.put<Company>(`${this.apiBaseUrl}/${request.id}`, request).pipe(
             catchError(err => this.handleError(err, `Mise à jour compagnie ID: ${request.id}`))
         );
     }
 
     deleteCompany(id: number): Observable<boolean> {
-        return this.http.delete<void>(`${this.apiBaseUrl}/companies/${id}`).pipe(
+        return this.http.delete<void>(`${this.apiBaseUrl}/${id}`).pipe(
             map(() => true),
             catchError(err => this.handleError(err, `Suppression compagnie ID: ${id}`))
         );
     }
 
     toggleCompanyStatus(id: number): Observable<Company> {
-        return this.http.patch<Company>(`${this.apiBaseUrl}/companies/${id}/toggle-status`, {}).pipe(
+        return this.http.patch<Company>(`${this.apiBaseUrl}/${id}/toggle-status`, {}).pipe(
             catchError(err => this.handleError(err, `Toggle status compagnie ID: ${id}`))
         );
     }

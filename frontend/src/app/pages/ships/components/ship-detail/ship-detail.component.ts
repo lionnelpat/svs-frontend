@@ -11,6 +11,8 @@ import { BadgeModule } from 'primeng/badge';
 import { Ship } from '../../../../shared/models/ship.model';
 import { CompanyService } from '../../../service/company.service';
 import { LoggerService } from '../../../../core/services/logger.service';
+import {Permission} from "../../../../auth/enums/permissions.enum";
+import {HasPermissionDirective} from "../../../../auth/directives";
 
 @Component({
     selector: 'app-ship-detail',
@@ -23,7 +25,8 @@ import { LoggerService } from '../../../../core/services/logger.service';
         AvatarModule,
         ChipModule,
         ProgressBarModule,
-        BadgeModule
+        BadgeModule,
+        HasPermissionDirective
     ],
     templateUrl: './ship-detail.component.html',
     styleUrls: ['./ship-detail.component.scss']
@@ -136,4 +139,6 @@ export class ShipDetailComponent implements OnInit, OnChanges {
     onClose(): void {
         this.closeClick.emit();
     }
+
+    protected readonly Permission = Permission;
 }

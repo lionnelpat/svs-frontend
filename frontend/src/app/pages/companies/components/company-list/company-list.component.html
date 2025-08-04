@@ -50,21 +50,21 @@
         >
             <ng-template pTemplate="header">
                 <tr>
-                    <th style="width: 3rem">#</th>
-                    <th pSortableColumn="nom">
+                    <th id="number" style="width: 3rem">#</th>
+                    <th id="name" pSortableColumn="nom">
                         Nom <p-sortIcon field="nom"></p-sortIcon>
                     </th>
-                    <th pSortableColumn="raisonSociale">
+                    <th id="raisonSociale" pSortableColumn="raisonSociale">
                         Raison sociale <p-sortIcon field="raisonSociale"></p-sortIcon>
                     </th>
-                    <th>Contact</th>
-                    <th pSortableColumn="pays">
+                    <th id="contact">Contact</th>
+                    <th id="pays" pSortableColumn="pays">
                         Pays <p-sortIcon field="pays"></p-sortIcon>
                     </th>
-                    <th pSortableColumn="actif">
+                    <th id="status" pSortableColumn="actif">
                         Statut <p-sortIcon field="actif"></p-sortIcon>
                     </th>
-                    <th style="width: 12rem">Actions</th>
+                    <th id="actions" style="width: 12rem"  >Actions</th>
                 </tr>
             </ng-template>
 
@@ -115,6 +115,7 @@
                                 tooltipPosition="top"
                             ></button>
                             <button
+                                *hasPermission="Permission.COMPANIES_UPDATE"
                                 pButton
                                 type="button"
                                 icon="pi pi-pencil"
@@ -125,6 +126,7 @@
                                 style="color: var(--svs-accent)"
                             ></button>
                             <button
+                                *hasPermission="Permission.COMPANIES_DELETE"
                                 pButton
                                 type="button"
                                 icon="pi pi-trash"

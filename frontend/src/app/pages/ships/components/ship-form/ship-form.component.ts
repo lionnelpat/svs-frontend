@@ -13,6 +13,8 @@ import { ShipService } from '../../../service/ship.service';
 import { CompanyService } from '../../../service/company.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { MessageService } from 'primeng/api';
+import {Permission} from "../../../../auth/enums/permissions.enum";
+import {HasPermissionDirective} from "../../../../auth/directives";
 
 @Component({
     selector: 'app-ship-form',
@@ -25,7 +27,8 @@ import { MessageService } from 'primeng/api';
         InputNumberModule,
         DropdownModule,
         DividerModule,
-        CalendarModule
+        CalendarModule,
+        HasPermissionDirective
     ],
     templateUrl: './ship-form.component.html',
     styleUrls: ['./ship-form.component.scss']
@@ -251,4 +254,6 @@ export class ShipFormComponent implements OnInit, OnChanges {
         this.ship = null;
         this.isPassengerShip = false;
     }
+
+    protected readonly Permission = Permission;
 }

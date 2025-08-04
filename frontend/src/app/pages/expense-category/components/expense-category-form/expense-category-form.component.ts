@@ -71,7 +71,6 @@ export class ExpenseCategoryFormComponent implements OnInit, OnChanges {
     private initForm(): void {
         this.expenseCategoryForm = this.fb.group({
             nom: ['', [Validators.required, Validators.minLength(2)]],
-            code: ['', [Validators.required, Validators.minLength(2)]],
             description: ['']
         });
 
@@ -83,7 +82,6 @@ export class ExpenseCategoryFormComponent implements OnInit, OnChanges {
             this.isEditMode = true;
             this.expenseCategoryForm.patchValue({
                 nom: this.expenseCategory.nom,
-                code: this.expenseCategory.code,
                 description: this.expenseCategory.description,
             });
         } else {
@@ -106,6 +104,7 @@ export class ExpenseCategoryFormComponent implements OnInit, OnChanges {
 
                 this.expenseCategoryService.updateCategory(this.expenseCategory.id, formValue).subscribe({
                     next: (updatedCompany) => {
+                        this.logger.info(` ✅ categorie de dépense modifiée avec success ${updatedCompany.nom}`);
                         this.messageService.add({
                             key: EXPENSE_CATEGORY_KEY,
                             severity: 'success',
@@ -131,7 +130,8 @@ export class ExpenseCategoryFormComponent implements OnInit, OnChanges {
                         });
                     }
                 });
-            } else {
+            }
+            else {
                 const createRequest: ExpenseCategoryCreate = formValue;
 
                 this.expenseCategoryService.createCategory(createRequest).subscribe({
@@ -142,6 +142,7 @@ export class ExpenseCategoryFormComponent implements OnInit, OnChanges {
                             summary: 'Succès',
                             detail: `Catégorie "${newCompany.nom}" créée avec succès`
                         });
+                        this.logger.info(` ✅ categorie de dépense crée avec success ${newCompany.nom}`);
                         this.formSubmit.emit(newCompany);
                         this.loading = false;
                         this.resetForm();
@@ -169,18 +170,13 @@ export class ExpenseCategoryFormComponent implements OnInit, OnChanges {
             });
 
             this.messageService.add({
+                key: EXPENSE_CATEGORY_KEY,
                 severity: 'warn',
                 summary: 'Attention',
                 detail: 'Veuillez corriger les erreurs dans le formulaire'
             });
         }
     }
-
-    onCodeChange(event: any): void {
-        const value = event.target.value.toUpperCase();
-        this.expenseCategoryForm.patchValue({ code: value }, { emitEvent: false });
-    }
-
 
 
     onCancel(): void {

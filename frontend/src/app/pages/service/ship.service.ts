@@ -19,7 +19,7 @@ import { environment } from '../../../environments/environment';
     providedIn: 'root'
 })
 export class ShipService {
-    private readonly apiBaseUrl = `${environment.apiBaseUrl}/${environment.apiVersion}/ships`;
+    private readonly apiBaseUrl = `${environment.apiBaseUrl}/ships`;
 
     constructor(
         private readonly http: HttpClient,
@@ -62,15 +62,15 @@ export class ShipService {
         }
 
         if (filter.pavillon) {
-            params = params.set('pavillon', filter.pavillon);
+            params = params.set('ShipFlag', filter.pavillon);
         }
 
         if (filter.compagnieId) {
             params = params.set('compagnieId', filter.compagnieId.toString());
         }
 
-        if (filter.typeNavire) {
-            params = params.set('typeNavire', filter.typeNavire);
+        if (filter.shipType) {
+            params = params.set('shipType', filter.shipType);
         }
 
         if (filter.active !== undefined) {
@@ -115,6 +115,18 @@ export class ShipService {
 
     toggleShipStatus(id: number): Observable<Ship> {
         return this.http.patch<Ship>(`${this.apiBaseUrl}/${id}/toggle-status`, {}).pipe(
+            catchError(err => this.handleError(err, `Changement de statut navire ID: ${id}`))
+        );
+    }
+
+    activeShipStatus(id: number): Observable<Ship> {
+        return this.http.patch<Ship>(`${this.apiBaseUrl}/${id}/activate`, {}).pipe(
+            catchError(err => this.handleError(err, `Changement de statut navire ID: ${id}`))
+        );
+    }
+
+    deactivateShipStatus(id: number): Observable<Ship> {
+        return this.http.patch<Ship>(`${this.apiBaseUrl}/${id}/deactivate`, {}).pipe(
             catchError(err => this.handleError(err, `Changement de statut navire ID: ${id}`))
         );
     }

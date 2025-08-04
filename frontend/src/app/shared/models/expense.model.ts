@@ -98,6 +98,7 @@ export interface ExpenseStatsResponse {
     totalExpenses: number;
     totalAmountXOF: number;
     totalAmountEUR: number;
+    totalPending: number;
     statutRepartition: StatutCount[];
     categorieRepartition: CategorieCount[];
     evolutionMensuelle: MonthlyExpense[];

@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { LoggerService } from './logger.service';
 import { MessageService } from 'primeng/api';
-import { ErrorResponse } from '../../auth/components/login/interfaces/auth.interface';
+import { ErrorResponse } from '../../auth/interfaces/auth.interface';
 
 export interface AppError {
     message: string;

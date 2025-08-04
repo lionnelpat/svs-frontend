@@ -8,8 +8,8 @@ import { Password } from 'primeng/password';
 import { Message } from 'primeng/message';
 import { Toast } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-import { AuthService } from './services/auth.service';
-import { ErrorResponse, LoginRequest } from './interfaces/auth.interface';
+import { AuthService } from '../../services/auth.service';
+import { ErrorResponse, LoginRequest } from '../../interfaces/auth.interface';
 
 @Component({
     selector: 'app-login-form',
@@ -47,7 +47,7 @@ export class LoginFormComponent implements OnInit {
 
     ngOnInit(): void {
         // Récupérer l'URL de retour s'il y en a une
-        this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+        this.returnUrl = this.route.snapshot.queryParams['returnUrl'] ?? '/dashboard';
 
         // Si déjà connecté, rediriger
         if (this.authService.isAuthenticated()) {

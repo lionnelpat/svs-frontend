@@ -1,4 +1,4 @@
-// services/role.service.ts
+// services/user-role.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
@@ -9,7 +9,7 @@ import {
     CreateRoleRequest,
     UpdateRoleRequest,
     RoleSearchParams,
-    RoleResponse
+    RoleResponse, PaginatedResponse
 } from '../interfaces/role.interface';
 
 import { environment } from '../../../../environments/environment';
@@ -20,7 +20,7 @@ import { ErrorHandlerService } from '../../../core/services/error-handler.servic
     providedIn: 'root'
 })
 export class RoleService {
-    private readonly apiBaseUrl = `${environment.apiBaseUrl}/${environment.apiVersion}/admin/roles`;
+    private readonly apiBaseUrl = `${environment.apiBaseUrl}/admin/roles`;
 
     constructor(
         private readonly http: HttpClient,

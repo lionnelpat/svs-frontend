@@ -41,7 +41,7 @@ export class ExpenseSupplierComponent {// État des dialogs
     isEditMode = false;
 
     constructor(
-        private logger: LoggerService
+        private readonly logger: LoggerService
     ) {
     }
 

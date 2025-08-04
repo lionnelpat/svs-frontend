@@ -14,6 +14,10 @@ import { CompanyService } from '../../../service/company.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
+import {UserRoleService} from "../../../../auth/services/user-role.service";
+import {UserRole} from "../../../../auth/enums/roles.enum";
+import {Permission} from "../../../../auth/enums/permissions.enum";
+import {HasPermissionDirective} from "../../../../auth/directives";
 
 
 export interface CompanyListEvent {
@@ -34,7 +38,8 @@ export interface CompanyListEvent {
         ConfirmDialogModule,
         TooltipModule,
         IconField,
-        InputIcon
+        InputIcon,
+        HasPermissionDirective
     ],
     providers: [ConfirmationService, MessageService],
     standalone: true,
@@ -56,6 +61,10 @@ export class CompanyListComponent implements OnInit {
     selectedCountry: string | null = null;
     selectedStatus: boolean | null = null;
 
+    // Exposer les enums pour le template
+    readonly UserRole = UserRole;
+    readonly Permission = Permission;
+
     // Options pour les dropdowns
     countryOptions = [
         { label: 'Sénégal', value: 'Sénégal' },
@@ -75,9 +84,27 @@ export class CompanyListComponent implements OnInit {
     constructor(
         private readonly companyService: CompanyService,
         private readonly confirmationService: ConfirmationService,
+        private readonly userRoleService: UserRoleService,
         private readonly messageService: MessageService,
         private readonly logger: LoggerService
     ) {}
+
+    // Propriétés computed pour les permissions
+    get canCreateCompany(): boolean {
+        return this.userRoleService.hasPermission(Permission.COMPANIES_CREATE);
+    }
+
+    get canUpdateCompany(): boolean {
+        return this.userRoleService.hasPermission(Permission.COMPANIES_UPDATE);
+    }
+
+    get canDeleteCompany(): boolean {
+        return this.userRoleService.hasPermission(Permission.COMPANIES_DELETE);
+    }
+
+    get isManagerOrAbove(): boolean {
+        return this.userRoleService.hasMinimumRole(UserRole.MANAGER);
+    }
 
     ngOnInit(): void {
         this.loadCompanies();
@@ -165,19 +192,30 @@ export class CompanyListComponent implements OnInit {
     }
 
     private deleteCompany(company: Company): void {
-        this.companyService.deleteCompany(company.id).subscribe({
-            next: () => {
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Succès',
-                    detail: `Compagnie "${company.nom}" supprimée avec succès`
-                });
-                this.loadCompanies();
-            },
-            error: (error) => {
-                this.logger.error('Erreur lors de la suppression', error);
-            }
-        });
+
+        // Vérification supplémentaire pour la suppression
+        if (this.userRoleService.hasRole(UserRole.SUPER_ADMIN) ||
+            (this.userRoleService.hasRole(UserRole.ADMIN))) {
+
+            // Procéder à la suppression
+            this.companyService.deleteCompany(company.id).subscribe({
+                next: () => {
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Succès',
+                        detail: `Compagnie "${company.nom}" supprimée avec succès`
+                    });
+                    this.loadCompanies();
+                },
+                error: (error) => {
+                    this.logger.error('Erreur lors de la suppression', error);
+                }
+            });
+        } else {
+            // Afficher un message d'erreur
+            console.error('Permissions insuffisantes pour supprimer cette entreprise');
+        }
+
     }
 
     private toggleCompanyStatus(company: Company): void {

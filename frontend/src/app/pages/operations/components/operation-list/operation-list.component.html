@@ -106,12 +106,14 @@
                                 icon="pi pi-eye"
                                 class="p-button-rounded p-button-text p-button-sm"
                                 (click)="onView(operation)"
+                                *hasPermission="Permission.OPERATIONS_READ"
                                 pTooltip="Voir les détails"
                                 tooltipPosition="top"
                             ></button>
                             <button
                                 pButton
                                 type="button"
+                                *hasPermission="Permission.OPERATIONS_UPDATE"
                                 icon="pi pi-pencil"
                                 class="p-button-rounded p-button-text p-button-sm"
                                 (click)="onEdit(operation)"
@@ -122,6 +124,7 @@
                             <button
                                 pButton
                                 type="button"
+                                *hasPermission="Permission.OPERATIONS_APPROVED"
                                 [icon]="operation.active ? 'pi pi-check' : 'pi pi-times'"
                                 class="p-button-rounded p-button-text p-button-sm"
                                 (click)="onToggleStatus(operation)"
@@ -135,6 +138,7 @@
                                 icon="pi pi-trash"
                                 class="p-button-rounded p-button-text p-button-sm p-button-danger"
                                 (click)="onDelete(operation)"
+                                *hasPermission="Permission.OPERATIONS_DELETE"
                                 pTooltip="Supprimer"
                                 tooltipPosition="top"
                             ></button>
@@ -169,3 +173,4 @@
 
 <!-- Dialogs de confirmation -->
 <p-confirmDialog header="Confirmation" key="{{OPERATION_KEY}}" acceptButtonStyleClass="p-button-danger"></p-confirmDialog>
+<p-toast  key="{{OPERATION_KEY}}" ></p-toast>

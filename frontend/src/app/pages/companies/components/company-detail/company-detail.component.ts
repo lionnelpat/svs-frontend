@@ -5,16 +5,19 @@ import { TagModule } from 'primeng/tag';
 import { DividerModule } from 'primeng/divider';
 import { AvatarModule } from 'primeng/avatar';
 import { Company } from '../../../../shared/models/company.model';
+import {Permission} from "../../../../auth/enums/permissions.enum";
+import {HasPermissionDirective} from "../../../../auth/directives";
 
 @Component({
   selector: 'app-company-detail',
-  imports: [
-      CommonModule,
-      ButtonModule,
-      TagModule,
-      DividerModule,
-      AvatarModule
-  ],
+    imports: [
+        CommonModule,
+        ButtonModule,
+        TagModule,
+        DividerModule,
+        AvatarModule,
+        HasPermissionDirective
+    ],
     standalone: true,
   templateUrl: './company-detail.component.html',
   styleUrl: './company-detail.component.scss'
@@ -66,4 +69,5 @@ export class CompanyDetailComponent {
         this.closeClick.emit();
     }
 
+    protected readonly Permission = Permission;
 }

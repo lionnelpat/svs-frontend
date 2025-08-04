@@ -23,24 +23,6 @@
                     {{ expenseCategoryForm.get('nom')?.getError('serverError') }}
                 </small>
             </div>
-
-            <div class="col-12 md:col-6">
-                <label for="code" class="field-label">
-                    Code/Référence <span class="required">*</span>
-                </label>
-                <input
-                    id="code"
-                    pInputText
-                    formControlName="code"
-                    placeholder="Ex: CAT-DEP-001"
-                    class="w-full code-input"
-                    [class.ng-invalid]="isFieldInvalid('code')"
-                    (input)="onCodeChange($event)"
-                />
-                <small class="field-error" *ngIf="expenseCategoryForm.get('code')?.hasError('serverError')">
-                    {{ expenseCategoryForm.get('code')?.getError('serverError') }}
-                </small>
-            </div>
         </div>
 
         <div class="grid">

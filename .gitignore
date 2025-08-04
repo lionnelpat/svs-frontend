@@ -18,3 +18,5 @@ nginx/html/
 # IDE
 .vscode/
 .idea/
+.angular/cache/*
+frontend/.angular/*

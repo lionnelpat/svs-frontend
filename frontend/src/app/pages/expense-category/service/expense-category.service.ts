@@ -19,7 +19,7 @@ import { ErrorHandlerService } from '../../../core/services/error-handler.servic
     providedIn: 'root'
 })
 export class ExpenseCategoryService {
-    private readonly baseUrl = `${environment.apiBaseUrl}/${environment.apiVersion}/expense-categories`;
+    private readonly baseUrl = `${environment.apiBaseUrl}/expense-categories`;
 
     // State management
     private readonly categoriesSubject = new BehaviorSubject<ExpenseCategory[]>([]);
@@ -36,7 +36,7 @@ export class ExpenseCategoryService {
     getCategories(filter: ExpenseCategoryListFilter = {}): Observable<ApiResponse<ExpenseCategoryListResponse>> {
         let params = new HttpParams();
 
-        if (filter.search) params = params.set('query', filter.search);
+        if (filter.search) params = params.set('search', filter.search);
         if (filter.active !== undefined) params = params.set('active', filter.active.toString());
         if (filter.page !== undefined) params = params.set('page', filter.page.toString());
         if (filter.size !== undefined) params = params.set('size', filter.size.toString());

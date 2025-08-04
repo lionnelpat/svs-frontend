@@ -19,7 +19,7 @@ import {
     providedIn: 'root'
 })
 export class ExpenseSupplierService {
-    private readonly baseUrl = `${environment.apiBaseUrl}/${environment.apiVersion}/expense-suppliers`;
+    private readonly baseUrl = `${environment.apiBaseUrl}/expense-suppliers`;
 
     constructor(private http: HttpClient,
                 private readonly logger: LoggerService,
@@ -31,7 +31,7 @@ export class ExpenseSupplierService {
     getSuppliers(filter: ExpenseSupplierListFilter = {}): Observable<ApiResponse<ExpenseSupplierListResponse>> {
         let params = new HttpParams();
 
-        if (filter.search) params = params.set('query', filter.search);
+        if (filter.search)  { params = params.set('search',  filter.search); }
         if (filter.active !== undefined) params = params.set('active', filter.active.toString());
         if (filter.page !== undefined) params = params.set('page', filter.page.toString());
         if (filter.size !== undefined) params = params.set('size', filter.size.toString());

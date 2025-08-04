@@ -1,0 +1,77 @@
+name: Frontend CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  DOCKER_IMAGE: modeltechafrica/svs-frontend
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: 📦 Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: 🔨 Build application
+        run: yarn build --configuration=production
+
+      - name: 🏗️ Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🔐 Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: 📊 Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.DOCKER_IMAGE }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: 🐳 Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: 🎉 Deployment Ready
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "🚀 Frontend image successfully built and pushed!"
+          echo "📋 Image: ${{ env.DOCKER_IMAGE }}:latest"
+          echo "🔗 Docker Hub: https://hub.docker.com/r/modeltechafrica/svs-frontend"
+          echo "⚡ Ready for deployment via Portainer"
+
+      - name: 📤 Create deployment summary
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ **Frontend image built successfully**" >> $GITHUB_STEP_SUMMARY
+          echo "- 📦 **Image**: \`${{ env.DOCKER_IMAGE }}:latest\`" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔗 **Docker Hub**: [View Image](https://hub.docker.com/r/modeltechafrica/svs-frontend)" >> $GITHUB_STEP_SUMMARY
+          echo "- ⚡ **Next Step**: Deploy via [Portainer](https://portainer.salanevision.com)" >> $GITHUB_STEP_SUMMARY

@@ -10,6 +10,8 @@ import { ShipFormComponent } from './components/ship-form/ship-form.component';
 import { ShipDetailComponent } from './components/ship-detail/ship-detail.component';
 import { LoggerService } from '../../core/services/logger.service';
 import { Button } from 'primeng/button';
+import {Permission} from "../../auth/enums/permissions.enum";
+import {HasPermissionDirective} from "../../auth/directives";
 
 @Component({
     selector: 'app-ships',
@@ -22,7 +24,8 @@ import { Button } from 'primeng/button';
         ShipListComponent,
         ShipFormComponent,
         ShipDetailComponent,
-        Button
+        Button,
+        HasPermissionDirective
     ],
     templateUrl: './ships.component.html',
     styleUrl: './ships.component.scss'
@@ -163,4 +166,6 @@ export class ShipsComponent {
     onCreate() {
         this.openCreateDialog();
     }
+
+    protected readonly Permission = Permission;
 }

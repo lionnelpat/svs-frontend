@@ -20,7 +20,7 @@ import { ApiResponse } from '../../core/interfaces/api-response.interface';
     providedIn: 'root'
 })
 export class OperationService {
-    private readonly apiUrl = `${environment.apiBaseUrl}/${environment.apiVersion}/operations`;
+    private readonly apiUrl = `${environment.apiBaseUrl}/operations`;
     private readonly DEFAULT_EXCHANGE_RATE = 656;
 
     constructor(
@@ -96,7 +96,7 @@ export class OperationService {
     }
 
     toggleOperationStatus(id: number): Observable<Operation> {
-        return this.http.patch<ApiResponse<Operation>>(`${this.apiUrl}/${id}/toggle-status`, {}).pipe(
+        return this.http.patch<ApiResponse<Operation>>(`${this.apiUrl}/${id}/toggle-active`, {}).pipe(
             map(resp => resp.data),
             catchError(err => this.handleError(err, `Toggle statut opération ID: ${id}`))
         );

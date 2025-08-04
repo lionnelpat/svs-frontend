@@ -110,7 +110,7 @@ export class ExpenseSupplierFormComponent implements OnInit, OnChanges {
 
             if (this.isEditMode && this.expenseSupplier) {
 
-                this.expenseSupplierService.updateSupplier(this.expenseSupplier.id, this.expenseSupplier).subscribe({
+                this.expenseSupplierService.updateSupplier(this.expenseSupplier.id, formValue).subscribe({
                     next: (updatedCompany) => {
                         this.messageService.add({
                             key: EXPENSE_SUPPLIER_KEY,
@@ -175,6 +175,7 @@ export class ExpenseSupplierFormComponent implements OnInit, OnChanges {
             });
 
             this.messageService.add({
+                key: EXPENSE_SUPPLIER_KEY,
                 severity: 'warn',
                 summary: 'Attention',
                 detail: 'Veuillez corriger les erreurs dans le formulaire'

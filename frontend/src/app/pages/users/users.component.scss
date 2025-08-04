@@ -1,0 +1,54 @@
+// src/app/pages/users/users.component.scss
+:host {
+    display: block;
+}
+
+// Statistiques
+.stats-card {
+    transition: transform 0.2s ease-in-out;
+
+    &:hover {
+        transform: translateY(-2px);
+    }
+}
+
+// Responsive design pour les statistiques
+@media (max-width: 768px) {
+    .stats-grid {
+        .col-12 {
+            margin-bottom: 1rem;
+        }
+    }
+}
+
+// Animation des cartes
+.surface-0 {
+    transition: all 0.3s ease;
+
+    &:hover {
+        box-shadow: 0 4px 25px 0 rgba(0, 0, 0, 0.1);
+    }
+}
+
+// Amélioration visuelle des icônes de statistiques
+.stat-icon {
+    transition: transform 0.2s ease;
+
+    &:hover {
+        transform: scale(1.1);
+    }
+}
+
+// Dialog customization
+::ng-deep {
+    .p-dialog {
+        .p-dialog-header {
+            padding: 1.5rem 2rem 1rem 2rem;
+            border-bottom: 1px solid var(--surface-d);
+        }
+
+        .p-dialog-content {
+            padding: 0;
+        }
+    }
+}

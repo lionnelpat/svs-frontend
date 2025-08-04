@@ -15,6 +15,7 @@
             <!-- Actions principales -->
             <div class="flex flex-col sm:flex-row">
                 <p-button
+                    *hasPermission="Permission.OPERATIONS_CREATE"
                     label="Nouvelle opération"
                     icon="pi pi-plus"
                     class="p-button-primary"

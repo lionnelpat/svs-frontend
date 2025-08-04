@@ -33,6 +33,8 @@ import {
 // Components
 import { ExpenseListComponent } from './components/expense-list/expense-list.component';
 import { ExpenseFormComponent } from './components/expense-form/expense-form.component';
+import {Permission} from "../../auth/enums/permissions.enum";
+import {HasPermissionDirective} from "../../auth/directives";
 
 @Component({
     selector: 'app-expenses',
@@ -49,6 +51,7 @@ import { ExpenseFormComponent } from './components/expense-form/expense-form.com
         SplitterModule,
         ExpenseListComponent,
         ExpenseFormComponent,
+        HasPermissionDirective,
     ],
     providers: [MessageService, ConfirmationService],
     templateUrl: './expenses.component.html',
@@ -591,4 +594,6 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     get canDeleteSelection(): boolean {
         return this.selectedExpenses.some(expense => this.canDeleteExpense(expense));
     }
+
+    protected readonly Permission = Permission;
 }

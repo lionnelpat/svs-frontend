@@ -18,6 +18,8 @@ import {
     ExpenseCategoryListFilter
 } from '../../../../shared/models/expense-category.model';
 import { ExpenseCategoryService } from '../../service/expense-category.service';
+import {Toast} from "primeng/toast";
+import {EXPENSE_CATEGORY_KEY} from "../../constants/constants";
 
 
 @Component({
@@ -33,7 +35,8 @@ import { ExpenseCategoryService } from '../../service/expense-category.service';
         ConfirmDialogModule,
         TooltipModule,
         IconField,
-        InputIcon
+        InputIcon,
+        Toast
     ],
     providers: [ConfirmationService, MessageService],
     standalone: true,
@@ -226,4 +229,6 @@ export class ExpenseCategoryListComponent implements OnInit {
         }
         return 'Aucune catégorie n\'a été enregistrée pour le moment.';
     }
+
+    protected readonly EXPENSE_CATEGORY_KEY = EXPENSE_CATEGORY_KEY;
 }

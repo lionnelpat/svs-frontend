@@ -23,7 +23,7 @@ import { ApiResponse } from '../../core/interfaces/api-response.interface';
     providedIn: 'root'
 })
 export class InvoiceService {
-    private readonly apiUrl = `${environment.apiBaseUrl}/${environment.apiVersion}/invoices`;
+    private readonly apiUrl = `${environment.apiBaseUrl}/invoices`;
 
     constructor(
         private readonly http: HttpClient,

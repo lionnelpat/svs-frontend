@@ -10,6 +10,11 @@ import { CreateOperationRequest, Operation, UpdateOperationRequest } from '../..
 import { OperationService } from '../../../service/operation.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { MessageService } from 'primeng/api';
+import {Toast} from "primeng/toast";
+import {OPERATION_KEY} from "../../constants/constant";
+import {Textarea} from "primeng/textarea";
+import {Permission} from "../../../../auth/enums/permissions.enum";
+import {HasPermissionDirective} from "../../../../auth/directives";
 
 @Component({
     selector: 'app-operation-form',
@@ -20,7 +25,10 @@ import { MessageService } from 'primeng/api';
         ButtonModule,
         InputTextModule,
         InputNumberModule,
-        DividerModule
+        DividerModule,
+        Toast,
+        Textarea,
+        HasPermissionDirective
     ],
     templateUrl: './operation-form.component.html',
     styleUrl: "./operation-form.component.scss",
@@ -70,7 +78,6 @@ export class OperationFormComponent implements OnInit, OnChanges {
         this.operationForm = this.fb.group({
             nom: ['', [Validators.required, Validators.minLength(2)]],
             description: ['', [Validators.required, Validators.minLength(10)]],
-            code: ['', [Validators.required, Validators.pattern(/^[A-Z]{3}-[A-Z]{3}-\d{3}$/)]],
             prixXOF: [0, [Validators.required, Validators.min(0)]],
             prixEURO: [0, [Validators.required, Validators.min(0)]]
         });
@@ -84,7 +91,6 @@ export class OperationFormComponent implements OnInit, OnChanges {
             this.operationForm.patchValue({
                 nom: this.operation.nom,
                 description: this.operation.description,
-                code: this.operation.code,
                 prixXOF: this.operation.prixXOF,
                 prixEURO: this.operation.prixEURO
             });
@@ -93,7 +99,6 @@ export class OperationFormComponent implements OnInit, OnChanges {
             this.operationForm.reset({
                 nom: '',
                 description: '',
-                code: '',
                 prixXOF: 0,
                 prixEURO: 0
             });
@@ -103,11 +108,6 @@ export class OperationFormComponent implements OnInit, OnChanges {
     isFieldInvalid(fieldName: string): boolean {
         const field = this.operationForm.get(fieldName);
         return !!(field && field.invalid && (field.dirty || field.touched));
-    }
-
-    onCodeChange(event: any): void {
-        const value = event.target.value.toUpperCase();
-        this.operationForm.patchValue({ code: value }, { emitEvent: false });
     }
 
     onPrixXOFChange(event: any): void {
@@ -158,6 +158,7 @@ export class OperationFormComponent implements OnInit, OnChanges {
                 this.operationService.updateOperation(updateRequest).subscribe({
                     next: (updatedOperation) => {
                         this.messageService.add({
+                            key: OPERATION_KEY,
                             severity: 'success',
                             summary: 'Succès',
                             detail: `Opération "${updatedOperation.nom}" modifiée avec succès`
@@ -177,6 +178,7 @@ export class OperationFormComponent implements OnInit, OnChanges {
                 this.operationService.createOperation(createRequest).subscribe({
                     next: (newOperation) => {
                         this.messageService.add({
+                            key: OPERATION_KEY,
                             severity: 'success',
                             summary: 'Succès',
                             detail: `Opération "${newOperation.nom}" créée avec succès`
@@ -198,6 +200,7 @@ export class OperationFormComponent implements OnInit, OnChanges {
             });
 
             this.messageService.add({
+                key: OPERATION_KEY,
                 severity: 'warn',
                 summary: 'Attention',
                 detail: 'Veuillez corriger les erreurs dans le formulaire'
@@ -214,11 +217,13 @@ export class OperationFormComponent implements OnInit, OnChanges {
         this.operationForm.reset({
             nom: '',
             description: '',
-            code: '',
             prixXOF: 0,
             prixEURO: 0
         });
         this.isEditMode = false;
         this.operation = null;
     }
+
+    protected readonly OPERATION_KEY = OPERATION_KEY;
+    protected readonly Permission = Permission;
 }
