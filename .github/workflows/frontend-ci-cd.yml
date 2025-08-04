@@ -22,11 +22,14 @@ jobs:
         with:
           node-version: '20'
           cache: 'yarn'
+          cache-dependency-path: 'frontend/yarn.lock'  # ← AJOUT : Spécifier le chemin
 
       - name: 📦 Install dependencies
+        working-directory: ./frontend  # ← AJOUT : Spécifier le répertoire de travail
         run: yarn install --frozen-lockfile
 
       - name: 🔨 Build application
+        working-directory: ./frontend  # ← AJOUT : Spécifier le répertoire de travail
         run: yarn build --configuration=production
 
       - name: 🏗️ Set up Docker Buildx
@@ -52,7 +55,7 @@ jobs:
       - name: 🐳 Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./frontend  # ← AJOUT : Spécifier le contexte Docker
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
