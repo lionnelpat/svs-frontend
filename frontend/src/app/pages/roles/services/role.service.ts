@@ -9,7 +9,7 @@ import {
     CreateRoleRequest,
     UpdateRoleRequest,
     RoleSearchParams,
-    RoleResponse
+    RoleResponse, PaginatedResponse
 } from '../interfaces/role.interface';
 
 import { environment } from '../../../../environments/environment';

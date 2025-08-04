@@ -10,6 +10,7 @@ import {UserRole} from "./app/auth/enums/roles.enum";
 import {EnhancedRoleGuard} from "./app/auth/guards/enhanced-role.guard";
 import {Permission} from "./app/auth/enums/permissions.enum";
 import {PermissionGuard} from "./app/auth/guards/permission.guard";
+import {UsersComponent} from "./app/pages/users/users.component";
 
 
 export const appRoutes: Routes = [
@@ -147,15 +148,16 @@ export const appRoutes: Routes = [
             },
 
             // Gestion des utilisateurs - ADMIN minimum
-            // {
-            //     path: 'users',
-            //     loadChildren: () => import('./app/pages/users/users.routes'),
-            //     canActivate: [PermissionGuard],
-            //     data: {
-            //         breadcrumb: 'Utilisateurs',
-            //         permissions: [Permission.USERS_READ]
-            //     }
-            // },
+            {
+                path: 'users',
+                loadChildren: () => import('./app/pages/users/users.routes'),
+                canActivate: [EnhancedRoleGuard],
+                data: {
+                    breadcrumb: 'Utilisateurs',
+                    permissions: [Permission.USERS_READ],
+                    title: 'Gestion des Utilisateurs'
+                }
+            },
 
             // Rapports - Permissions spécifiques
             // {

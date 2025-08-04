@@ -163,27 +163,27 @@ export class RoleService {
     /**
      * Obtient une description pour une permission
      */
-    // getPermissionDescription(permission: Permission): string {
-    //     const descriptions = {
-    //         [Permission.USERS_CREATE]: 'Créer des utilisateurs',
-    //         [Permission.USERS_READ]: 'Consulter les utilisateurs',
-    //         [Permission.USERS_UPDATE]: 'Modifier les utilisateurs',
-    //         [Permission.USERS_DELETE]: 'Supprimer les utilisateurs',
-    //
-    //         [Permission.INVOICES_CREATE]: 'Créer des factures',
-    //         [Permission.INVOICES_READ]: 'Consulter les factures',
-    //         [Permission.INVOICES_UPDATE]: 'Modifier les factures',
-    //         [Permission.INVOICES_DELETE]: 'Supprimer les factures',
-    //         [Permission.INVOICES_APPROVE]: 'Approuver les factures',
-    //
-    //         [Permission.COMPANIES_CREATE]: 'Créer des entreprises',
-    //         [Permission.COMPANIES_READ]: 'Consulter les entreprises',
-    //         [Permission.COMPANIES_UPDATE]: 'Modifier les entreprises',
-    //         [Permission.COMPANIES_DELETE]: 'Supprimer les entreprises',
-    //
-    //         // Ajoutez les autres descriptions...
-    //     };
-    //
-    //     return descriptions[permission] || permission;
-    // }
+    getPermissionDescription(permission: Permission): string {
+        const descriptions = {
+            [Permission.USERS_CREATE]: 'Créer des utilisateurs',
+            [Permission.USERS_READ]: 'Consulter les utilisateurs',
+            [Permission.USERS_UPDATE]: 'Modifier les utilisateurs',
+            [Permission.USERS_DELETE]: 'Supprimer les utilisateurs',
+
+            [Permission.INVOICES_CREATE]: 'Créer des factures',
+            [Permission.INVOICES_READ]: 'Consulter les factures',
+            [Permission.INVOICES_UPDATE]: 'Modifier les factures',
+            [Permission.INVOICES_DELETE]: 'Supprimer les factures',
+            [Permission.INVOICES_APPROVE]: 'Approuver les factures',
+
+            [Permission.COMPANIES_CREATE]: 'Créer des entreprises',
+            [Permission.COMPANIES_READ]: 'Consulter les entreprises',
+            [Permission.COMPANIES_UPDATE]: 'Modifier les entreprises',
+            [Permission.COMPANIES_DELETE]: 'Supprimer les entreprises',
+
+            // Ajoutez les autres descriptions...
+        };
+
+        return permission || descriptions[permission];
+    }
 }

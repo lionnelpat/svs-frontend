@@ -140,7 +140,8 @@ export class AppMenu implements OnInit  {
                         label: 'Rôles',
                         icon: 'pi pi-fw pi-shield',
                         routerLink: '/roles/list',
-                        roles: [UserRole.SUPER_ADMIN]
+                        roles: [UserRole.ADMIN,
+                            UserRole.SUPER_ADMIN]
                     },
                     {
                         label: '',

@@ -1,0 +1,426 @@
+<!-- src/app/pages/users/components/user-list/user-list.component.html -->
+<div class="card">
+    <!-- En-tête avec barre de recherche et actions -->
+    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center mb-4">
+        <div class="flex flex-column md:flex-row gap-3 w-full">
+            <!-- Recherche globale -->
+            <div class="flex-1">
+                <span class="p-input-icon-left w-full">
+                    <i class="pi pi-search"></i>
+                    <input
+                        pInputText
+                        type="text"
+                        [value]="globalFilterValue"
+                        (input)="onGlobalFilter($event)"
+                        placeholder="Rechercher un utilisateur..."
+                        class="w-full" />
+                </span>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex gap-2 align-items-center">
+                <!-- Bouton filtres avancés -->
+                <button
+                    pButton
+                    pRipple
+                    type="button"
+                    [icon]="showAdvancedFilters ? 'pi pi-filter-slash' : 'pi pi-filter'"
+                    [label]="showAdvancedFilters ? 'Masquer filtres' : 'Filtres'"
+                    class="p-button-outlined"
+                    [pTooltip]="showAdvancedFilters ? 'Masquer les filtres avancés' : 'Afficher les filtres avancés'"
+                    (click)="toggleAdvancedFilters()">
+                </button>
+
+                <!-- Bouton actualiser -->
+                <button
+                    pButton
+                    pRipple
+                    type="button"
+                    icon="pi pi-refresh"
+                    class="p-button-outlined"
+                    [pTooltip]="tooltips.REFRESH"
+                    (click)="refresh()">
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtres avancés -->
+    <div *ngIf="showAdvancedFilters" class="surface-50 p-3 border-round mb-4">
+        <form [formGroup]="searchForm" class="grid">
+            <div class="col-12 md:col-6 lg:col-3">
+                <label for="isActive" class="block text-900 font-medium mb-2">Statut</label>
+                <p-dropdown
+                    id="isActive"
+                    formControlName="isActive"
+                    [options]="[
+                        { label: 'Tous', value: null },
+                        { label: 'Actifs', value: true },
+                        { label: 'Inactifs', value: false }
+                    ]"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Tous les statuts"
+                    class="w-full">
+                </p-dropdown>
+            </div>
+
+            <div class="col-12 md:col-6 lg:col-3">
+                <label for="isEmailVerified" class="block text-900 font-medium mb-2">Email vérifié</label>
+                <p-dropdown
+                    id="isEmailVerified"
+                    formControlName="isEmailVerified"
+                    [options]="[
+                        { label: 'Tous', value: null },
+                        { label: 'Vérifiés', value: true },
+                        { label: 'Non vérifiés', value: false }
+                    ]"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Tous"
+                    class="w-full">
+                </p-dropdown>
+            </div>
+
+            <div class="col-12 md:col-6 lg:col-3">
+                <label for="createdFrom" class="block text-900 font-medium mb-2">Créé à partir du</label>
+                <p-calendar
+                    id="createdFrom"
+                    formControlName="createdFrom"
+                    dateFormat="dd/mm/yy"
+                    placeholder="Date de début"
+                    class="w-full">
+                </p-calendar>
+            </div>
+
+            <div class="col-12 md:col-6 lg:col-3">
+                <label for="createdTo" class="block text-900 font-medium mb-2">Créé jusqu'au</label>
+                <p-calendar
+                    id="createdTo"
+                    formControlName="createdTo"
+                    dateFormat="dd/mm/yy"
+                    placeholder="Date de fin"
+                    class="w-full">
+                </p-calendar>
+            </div>
+
+            <div class="col-12 flex justify-content-end">
+                <button
+                    pButton
+                    pRipple
+                    type="button"
+                    label="Effacer filtres"
+                    icon="pi pi-times"
+                    class="p-button-text"
+                    (click)="clearFilters()">
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Actions en lot -->
+    <div *ngIf="showBulkActions" class="bg-primary-50 border-primary-200 border-1 p-3 border-round mb-4">
+        <div class="flex flex-column md:flex-row md:align-items-center gap-3">
+            <span class="font-medium">
+                {{ selectedUsers.length }} utilisateur(s) sélectionné(s)
+            </span>
+            <div class="flex gap-2">
+                <p-splitButton
+                    *ngIf="bulkActions.length > 0"
+                    label="Actions"
+                    icon="pi pi-cog"
+                    [model]="bulkActions"
+                    class="p-button-sm">
+                </p-splitButton>
+                <button
+                    pButton
+                    pRipple
+                    type="button"
+                    label="Annuler"
+                    icon="pi pi-times"
+                    class="p-button-sm p-button-secondary"
+                    (click)="userService.clearSelection()">
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table des utilisateurs -->
+    <p-table
+        #userTable
+        [value]="users"
+        [lazy]="true"
+        [paginator]="true"
+        [rows]="rows"
+        [totalRecords]="totalRecords"
+        [rowsPerPageOptions]="rowsPerPageOptions"
+        [loading]="loading"
+        [first]="first"
+        [selection]="selectedUsers"
+        [(selection)]="selectedUsers"
+        [selectionPageOnly]="false"
+        dataKey="id"
+        styleClass="p-datatable-users"
+        [globalFilterFields]="['username', 'fullName', 'email']"
+        [scrollable]="true"
+        scrollHeight="60vh">
+
+        <!-- En-tête de la table -->
+        <ng-template pTemplate="header">
+            <tr>
+                <!-- Checkbox de sélection -->
+                <th style="width: 3rem">
+                    <p-tableHeaderCheckbox>
+                    </p-tableHeaderCheckbox>
+                </th>
+
+                <!-- Avatar -->
+                <th style="width: 4rem"></th>
+
+                <!-- Nom d'utilisateur -->
+                <th pSortableColumn="username">
+                    <div class="flex align-items-center">
+                        Nom d'utilisateur
+                        <p-sortIcon field="username"></p-sortIcon>
+                    </div>
+                </th>
+
+                <!-- Nom complet -->
+                <th pSortableColumn="fullName">
+                    <div class="flex align-items-center">
+                        Nom complet
+                        <p-sortIcon field="fullName"></p-sortIcon>
+                    </div>
+                </th>
+
+                <!-- Email -->
+                <th pSortableColumn="email">
+                    <div class="flex align-items-center">
+                        Email
+                        <p-sortIcon field="email"></p-sortIcon>
+                    </div>
+                </th>
+
+                <!-- Téléphone -->
+                <th>Téléphone</th>
+
+                <!-- Rôles -->
+                <th>Rôles</th>
+
+                <!-- Statut -->
+                <th pSortableColumn="isActive">
+                    <div class="flex align-items-center">
+                        Statut
+                        <p-sortIcon field="isActive"></p-sortIcon>
+                    </div>
+                </th>
+
+                <!-- Dernière connexion -->
+                <th pSortableColumn="lastLogin">
+                    <div class="flex align-items-center">
+                        Dernière connexion
+                        <p-sortIcon field="lastLogin"></p-sortIcon>
+                    </div>
+                </th>
+
+                <!-- Actions -->
+                <th style="width: 8rem">Actions</th>
+            </tr>
+        </ng-template>
+
+        <!-- Corps de la table -->
+        <ng-template pTemplate="body" let-user let-index="rowIndex">
+            <tr [class.user-recent]="isRecentUser(user)">
+                <!-- Checkbox de sélection -->
+                <td>
+                    <p-tableCheckbox [value]="user"></p-tableCheckbox>
+                </td>
+
+                <!-- Avatar -->
+                <td>
+                    <p-avatar
+                        [label]="getUserInitials(user)"
+                        styleClass="mr-2"
+                        size="normal"
+                        shape="circle"
+                        [style]="{ 'background-color': '#' + user.id.toString(16).slice(-6) }">
+                    </p-avatar>
+                </td>
+
+                <!-- Nom d'utilisateur -->
+                <td>
+                    <div class="flex align-items-center">
+                        <span class="font-medium">{{ user.username }}</span>
+                        <i *ngIf="isRecentUser(user)"
+                           class="pi pi-star-fill text-orange-500 ml-2"
+                           pTooltip="Nouvel utilisateur"></i>
+                    </div>
+                </td>
+
+                <!-- Nom complet -->
+                <td>
+                    <span>{{ user.fullName }}</span>
+                </td>
+
+                <!-- Email -->
+                <td>
+                    <div class="flex align-items-center">
+                        <span>{{ user.email }}</span>
+                        <i *ngIf="!user.isEmailVerified"
+                           class="pi pi-exclamation-triangle text-orange-500 ml-2"
+                           pTooltip="Email non vérifié"></i>
+                    </div>
+                </td>
+
+                <!-- Téléphone -->
+                <td>
+                    <span>{{ user.phone || '-' }}</span>
+                </td>
+
+                <!-- Rôles -->
+                <td>
+                    <p-tag
+                        [value]="formatUserRoles(user)"
+                        [severity]="getRolesSeverity(user)">
+                    </p-tag>
+                </td>
+
+                <!-- Statut -->
+                <td>
+                    <p-tag
+                        [value]="getUserStatusLabel(user)"
+                        [severity]="getUserStatusSeverity(user)"
+                        [icon]="getUserStatusIcon(user)">
+                    </p-tag>
+                </td>
+
+                <!-- Dernière connexion -->
+                <td>
+                    <span class="text-sm">{{ formatLastLogin(user.lastLogin) }}</span>
+                </td>
+
+                <!-- Actions -->
+                <td>
+                    <div class="flex gap-1">
+                        <!-- Bouton voir -->
+                        <button
+                            pButton
+                            pRipple
+                            type="button"
+                            icon="pi pi-eye"
+                            class="p-button-rounded p-button-text p-button-sm"
+                            [pTooltip]="tooltips.VIEW_DETAILS"
+                            (click)="onUserSelect(user)">
+                        </button>
+
+                        <!-- Bouton modifier - Visible pour ADMIN+ -->
+                        <button
+                            *ngIf="canEdit"
+                            pButton
+                            pRipple
+                            type="button"
+                            icon="pi pi-pencil"
+                            class="p-button-rounded p-button-text p-button-sm"
+                            [pTooltip]="tooltips.EDIT"
+                            (click)="userEdit.emit(user)">
+                        </button>
+
+                        <!-- Bouton activer/désactiver - Visible pour ADMIN+ -->
+                        <button
+                            *ngIf="canEdit && user.isActive"
+                            pButton
+                            pRipple
+                            type="button"
+                            icon="pi pi-times"
+                            class="p-button-rounded p-button-text p-button-sm p-button-warning"
+                            [pTooltip]="tooltips.DEACTIVATE"
+                            (click)="deactivateUser(user)">
+                        </button>
+
+                        <button
+                            *ngIf="canEdit && !user.isActive"
+                            pButton
+                            pRipple
+                            type="button"
+                            icon="pi pi-check"
+                            class="p-button-rounded p-button-text p-button-sm p-button-success"
+                            [pTooltip]="tooltips.ACTIVATE"
+                            (click)="activateUser(user)">
+                        </button>
+
+                        <!-- Bouton déverrouiller - Visible si nécessaire -->
+                        <button
+                            *ngIf="canEdit && user.accountLockedUntil"
+                            pButton
+                            pRipple
+                            type="button"
+                            icon="pi pi-unlock"
+                            class="p-button-rounded p-button-text p-button-sm p-button-info"
+                            [pTooltip]="tooltips.UNLOCK"
+                            (click)="unlockUser(user)">
+                        </button>
+
+                        <!-- Bouton supprimer - Visible pour SUPER_ADMIN uniquement -->
+                        <button
+                            *ngIf="canDelete && canDeleteSpecificUser(user)"
+                            pButton
+                            pRipple
+                            type="button"
+                            icon="pi pi-trash"
+                            class="p-button-rounded p-button-text p-button-sm p-button-danger"
+                            [pTooltip]="tooltips.DELETE"
+                            (click)="confirmDeleteUser(user)">
+                        </button>
+
+                        <!-- Menu contextuel -->
+                        <button
+                            pButton
+                            pRipple
+                            type="button"
+                            icon="pi pi-ellipsis-v"
+                            class="p-button-rounded p-button-text p-button-sm"
+                            (click)="contextMenu.toggle($event)"
+                            #menuButton>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+
+        <!-- Message quand aucun utilisateur -->
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td colspan="10" class="text-center p-4">
+                    <div class="flex flex-column align-items-center gap-3">
+                        <i class="pi pi-users text-4xl text-400"></i>
+                        <span class="text-lg">Aucun utilisateur trouvé</span>
+                        <p class="text-500 m-0">
+                            {{ globalFilterValue ? 'Aucun résultat pour votre recherche' : 'Aucun utilisateur dans le système' }}
+                        </p>
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+
+        <!-- Template de chargement -->
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td colspan="10">
+                    <div class="flex align-items-center justify-content-center p-4">
+                        <p-progressSpinner
+                            styleClass="w-2rem h-2rem"
+                            strokeWidth="4">
+                        </p-progressSpinner>
+                        <span class="ml-2">Chargement des utilisateurs...</span>
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<!-- Menu contextuel -->
+<p-contextMenu
+    #contextMenu
+    [model]="contextMenuItems">
+</p-contextMenu>

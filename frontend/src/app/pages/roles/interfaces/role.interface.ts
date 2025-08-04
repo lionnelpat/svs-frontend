@@ -10,6 +10,19 @@ export interface Role {
     displayName: string;
 }
 
+export interface PaginatedResponse<T> {
+    roles: T[]; // ou `items: T[]` selon ton backend
+    total: number;
+    page: number;
+    size: number;
+    totalPages: number;
+    first: boolean;
+    last: boolean;
+    hasNext: boolean;
+    hasPrevious: boolean;
+}
+
+
 export interface CreateRoleRequest {
     name: string;
     description: string;
