@@ -101,7 +101,7 @@ export const appRoutes: Routes = [
                 canActivate: [EnhancedRoleGuard],
                 data: {
                     breadcrumb: 'Dépenses',
-                    minimumRole: UserRole.MANAGER
+                    permissions: [Permission.EXPENSES_READ]
                 }
             },
 

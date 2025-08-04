@@ -6,7 +6,7 @@ import {
     inject,
     OnInit
 } from '@angular/core';
-import { RoleService } from '../services/role.service';
+import { UserRoleService } from '../services/user-role.service';
 import { UserRole } from '../enums/roles.enum';
 
 @Directive({
@@ -16,7 +16,7 @@ import { UserRole } from '../enums/roles.enum';
 export class HasRoleDirective implements OnInit {
     private readonly templateRef = inject(TemplateRef<any>);
     private readonly viewContainer = inject(ViewContainerRef);
-    private readonly roleService = inject(RoleService);
+    private readonly roleService = inject(UserRoleService);
 
     private roles: UserRole[] = [];
     // private requireAll: boolean = false;

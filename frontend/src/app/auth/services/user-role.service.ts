@@ -1,4 +1,4 @@
-// src/app/auth/services/role.service.ts
+// src/app/auth/services/user-role.service.ts
 import { Injectable, inject, computed } from '@angular/core';
 import { UserRole } from '../enums/roles.enum';
 
@@ -9,7 +9,7 @@ import {ROLE_PERMISSIONS} from "../enums/role-permissions";
 @Injectable({
     providedIn: 'root'
 })
-export class RoleService {
+export class UserRoleService {
     private readonly authService = inject(AuthService);
 
     // Signaux computed pour les permissions de l'utilisateur actuel

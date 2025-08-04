@@ -8,7 +8,7 @@ import {
     OnDestroy
 } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
-import { RoleService } from '../services/role.service';
+import { UserRoleService } from '../services/user-role.service';
 import { Permission } from '../enums/permissions.enum';
 import {UserRole} from "../enums/roles.enum";
 
@@ -20,7 +20,7 @@ import {UserRole} from "../enums/roles.enum";
 export class HasPermissionDirective implements OnInit, OnDestroy {
     private readonly templateRef = inject(TemplateRef<any>);
     private readonly viewContainer = inject(ViewContainerRef);
-    private readonly roleService = inject(RoleService);
+    private readonly roleService = inject(UserRoleService);
     private readonly destroy$ = new Subject<void>();
 
     private permissions: Permission[] = [];

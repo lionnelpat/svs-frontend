@@ -34,6 +34,9 @@ import { ExpenseSupplierService } from '../../../expense-supplier/service/expens
 import { PaymentMethodService } from '../../../payment-methods/service/payment-method.service';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
+import {HasPermissionDirective} from "../../../../auth/directives";
+import {Permission} from "../../../../auth/enums/permissions.enum";
+import {UserRoleService} from "../../../../auth/services/user-role.service";
 
 @Component({
     selector: 'app-expense-list',
@@ -53,7 +56,8 @@ import { InputIcon } from 'primeng/inputicon';
         ProgressSpinnerModule,
         CheckboxModule,
         IconField,
-        InputIcon
+        InputIcon,
+        HasPermissionDirective
     ],
     templateUrl: './expense-list.component.html',
     styleUrls: ['./expense-list.component.scss']
@@ -74,6 +78,7 @@ export class ExpenseListComponent implements OnInit, OnDestroy {
     private readonly expenseSupplierService = inject(ExpenseSupplierService);
     private readonly paymentMethodService = inject(PaymentMethodService);
     private readonly messageService = inject(MessageService);
+    private readonly userRoleService = inject(UserRoleService);
 
     // Données du composant
     expenses: Expense[] = [];
@@ -448,6 +453,7 @@ export class ExpenseListComponent implements OnInit, OnDestroy {
         const canApprove = this.canApproveExpense(expense);
         const canReject = this.canRejectExpense(expense);
         const canMarkPaid = this.canMarkAsPaid(expense);
+        const canDelete = this.canDelete(expense);
 
         return [
             {
@@ -481,18 +487,10 @@ export class ExpenseListComponent implements OnInit, OnDestroy {
                 separator: true
             },
             {
-                label: 'Dupliquer',
-                icon: 'pi pi-copy',
-                command: () => this.duplicateExpense(expense)
-            },
-            {
-                separator: true
-            },
-            {
                 label: 'Supprimer',
                 icon: 'pi pi-trash',
                 styleClass: 'text-red-500',
-                disabled: !canEdit,
+                disabled: !canDelete,
                 command: () => this.deleteExpense(expense)
             }
         ];
@@ -601,9 +599,9 @@ export class ExpenseListComponent implements OnInit, OnDestroy {
     getStatusSeverity(status: ExpenseStatus): "success" | "info" | "warn" | "danger" | "secondary" {
         const severityMap: { [key in ExpenseStatus]: 'success' | 'info' | 'warn' | 'danger' | 'secondary' } = {
             [ExpenseStatus.EN_ATTENTE]: 'warn',
-            [ExpenseStatus.APPROUVEE]: 'success',
+            [ExpenseStatus.APPROUVEE]: 'info',
             [ExpenseStatus.REJETEE]: 'danger',
-            [ExpenseStatus.PAYEE]: 'info'
+            [ExpenseStatus.PAYEE]: 'success'
         };
         return severityMap[status] || 'secondary';
     }
@@ -611,19 +609,23 @@ export class ExpenseListComponent implements OnInit, OnDestroy {
     // ========== Méthodes de vérification des permissions (publiques pour le template) ==========
 
     canEditExpense(expense: Expense): boolean {
-        return expense.statut === ExpenseStatus.EN_ATTENTE || expense.statut === ExpenseStatus.REJETEE;
+        return (expense.statut === ExpenseStatus.EN_ATTENTE || expense.statut === ExpenseStatus.REJETEE) && this.userRoleService.hasPermission(Permission.EXPENSES_UPDATE);
     }
 
     canApproveExpense(expense: Expense): boolean {
-        return expense.statut === ExpenseStatus.EN_ATTENTE;
+        return (expense.statut === ExpenseStatus.EN_ATTENTE) && this.userRoleService.hasPermission(Permission.EXPENSES_APPROVED);
     }
 
     canRejectExpense(expense: Expense): boolean {
-        return expense.statut === ExpenseStatus.EN_ATTENTE || expense.statut === ExpenseStatus.APPROUVEE;
+        return (expense.statut === ExpenseStatus.EN_ATTENTE || expense.statut === ExpenseStatus.APPROUVEE) && this.userRoleService.hasPermission(Permission.EXPENSES_REJECTED);
     }
 
     canMarkAsPaid(expense: Expense): boolean {
-        return expense.statut === ExpenseStatus.APPROUVEE;
+        return (expense.statut === ExpenseStatus.APPROUVEE) && this.userRoleService.hasPermission(Permission.EXPENSES_MARK_AS_PAID);
+    }
+
+    canDelete(expense: Expense): boolean {
+        return (expense.statut === ExpenseStatus.EN_ATTENTE || expense.statut === ExpenseStatus.REJETEE ) && this.userRoleService.hasPermission(Permission.EXPENSES_DELETE);
     }
 
     // ========== Export ==========
@@ -695,4 +697,6 @@ export class ExpenseListComponent implements OnInit, OnDestroy {
     toggleFilters() {
         this.showFilters = !this.showFilters;
     }
+
+    protected readonly Permission = Permission;
 }

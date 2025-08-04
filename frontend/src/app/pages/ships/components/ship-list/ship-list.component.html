@@ -142,6 +142,7 @@
                             <button
                                 pButton
                                 type="button"
+                                *hasPermission="Permission.SHIPS_UPDATE"
                                 icon="pi pi-pencil"
                                 class="p-button-rounded p-button-text p-button-sm"
                                 (click)="onEdit(ship)"
@@ -151,8 +152,9 @@
                             ></button>
                             <button
                                 pButton
+                                *hasPermission="Permission.SHIPS_APPROVED"
                                 type="button"
-                                [icon]="ship.active ? 'pi pi-eye-slash' : 'pi pi-eye'"
+                                [icon]="ship.active ? 'pi pi-times' : 'pi pi-check'"
                                 class="p-button-rounded p-button-text p-button-sm"
                                 (click)="onToggleStatus(ship)"
                                 [pTooltip]="ship.active ? 'Désactiver' : 'Activer'"
@@ -161,6 +163,7 @@
                             ></button>
                             <button
                                 pButton
+                                *hasPermission="Permission.SHIPS_DELETE"
                                 type="button"
                                 icon="pi pi-trash"
                                 class="p-button-rounded p-button-text p-button-sm p-button-danger"

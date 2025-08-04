@@ -288,12 +288,13 @@
             (click)="onCancel()"
         ></button>
         <button
+            *hasPermission="[Permission.COMPANIES_UPDATE, Permission.COMPANIES_CREATE]"
             type="submit"
             pButton
             [label]="isEditMode ? 'Modifier' : 'Créer'"
             [icon]="isEditMode ? 'pi pi-check' : 'pi pi-plus'"
             [loading]="loading"
-            [disabled]="companyForm.invalid"
+            [disabled]="companyForm.invalid || !canCreateCompany"
             class="ml-2"
             style="background-color: var(--svs-primary); border-color: var(--svs-primary)"
         ></button>

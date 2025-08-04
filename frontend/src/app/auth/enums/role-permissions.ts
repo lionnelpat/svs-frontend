@@ -34,16 +34,23 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
         Permission.SHIPS_READ,
         Permission.SHIPS_UPDATE,
         Permission.SHIPS_DELETE,
+        Permission.SHIPS_APPROVED,
+        Permission.SHIPS_REJECTED,
 
         Permission.OPERATIONS_CREATE,
         Permission.OPERATIONS_READ,
         Permission.OPERATIONS_UPDATE,
         Permission.OPERATIONS_DELETE,
+        Permission.OPERATIONS_APPROVED,
+        Permission.OPERATIONS_REJECTED,
 
         Permission.EXPENSES_CREATE,
         Permission.EXPENSES_READ,
         Permission.EXPENSES_UPDATE,
         Permission.EXPENSES_DELETE,
+        Permission.EXPENSES_APPROVED,
+        Permission.EXPENSES_REJECTED,
+        Permission.EXPENSES_MARK_AS_PAID,
 
         Permission.EXPENSES_CATEGORY_CREATE,
         Permission.EXPENSES_CATEGORY_READ,
@@ -78,14 +85,21 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
         Permission.SHIPS_CREATE,
         Permission.SHIPS_READ,
         Permission.SHIPS_UPDATE,
+        Permission.SHIPS_APPROVED,
+        Permission.SHIPS_REJECTED,
 
         Permission.OPERATIONS_CREATE,
         Permission.OPERATIONS_READ,
         Permission.OPERATIONS_UPDATE,
+        Permission.OPERATIONS_APPROVED,
+        Permission.OPERATIONS_REJECTED,
 
         Permission.EXPENSES_CREATE,
         Permission.EXPENSES_READ,
         Permission.EXPENSES_UPDATE,
+        Permission.EXPENSES_APPROVED,
+        Permission.EXPENSES_REJECTED,
+        Permission.EXPENSES_MARK_AS_PAID,
 
         Permission.EXPENSES_CATEGORY_CREATE,
         Permission.EXPENSES_CATEGORY_READ,
@@ -108,6 +122,8 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
         Permission.COMPANIES_READ,
 
         Permission.SHIPS_READ,
+        Permission.SHIPS_CREATE,
+        Permission.SHIPS_UPDATE,
 
         Permission.OPERATIONS_CREATE,
         Permission.OPERATIONS_READ,
@@ -132,6 +148,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
         // Lecture seule
         Permission.INVOICES_READ,
         Permission.COMPANIES_READ,
+        Permission.OPERATIONS_CREATE,
         Permission.SHIPS_READ,
         Permission.OPERATIONS_READ,
         Permission.EXPENSES_READ,

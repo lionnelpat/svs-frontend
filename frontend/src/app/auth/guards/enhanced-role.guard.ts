@@ -9,7 +9,7 @@ import {
     Router,
     UrlTree
 } from '@angular/router';
-import { RoleService } from '../services/role.service';
+import { UserRoleService } from '../services/user-role.service';
 import {UserRole} from "../enums/roles.enum";
 import {Permission} from "../enums/permissions.enum";
 import {AuthService} from "../services/auth.service";
@@ -18,7 +18,7 @@ import {AuthService} from "../services/auth.service";
     providedIn: 'root'
 })
 export class EnhancedRoleGuard implements CanActivate, CanActivateChild {
-    private readonly roleService = inject(RoleService);
+    private readonly roleService = inject(UserRoleService);
     private readonly authService = inject(AuthService);
     private readonly router = inject(Router);
 

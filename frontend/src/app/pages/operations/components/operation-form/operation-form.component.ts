@@ -13,6 +13,8 @@ import { MessageService } from 'primeng/api';
 import {Toast} from "primeng/toast";
 import {OPERATION_KEY} from "../../constants/constant";
 import {Textarea} from "primeng/textarea";
+import {Permission} from "../../../../auth/enums/permissions.enum";
+import {HasPermissionDirective} from "../../../../auth/directives";
 
 @Component({
     selector: 'app-operation-form',
@@ -25,7 +27,8 @@ import {Textarea} from "primeng/textarea";
         InputNumberModule,
         DividerModule,
         Toast,
-        Textarea
+        Textarea,
+        HasPermissionDirective
     ],
     templateUrl: './operation-form.component.html',
     styleUrl: "./operation-form.component.scss",
@@ -222,4 +225,5 @@ export class OperationFormComponent implements OnInit, OnChanges {
     }
 
     protected readonly OPERATION_KEY = OPERATION_KEY;
+    protected readonly Permission = Permission;
 }

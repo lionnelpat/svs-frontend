@@ -191,6 +191,7 @@
             icon="pi pi-pencil"
             class="p-button-raised"
             (click)="onEdit()"
+            *hasPermission="Permission.COMPANIES_UPDATE"
             style="background-color: var(--svs-accent); border-color: var(--svs-accent)"
         ></button>
         <button

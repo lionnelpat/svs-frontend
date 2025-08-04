@@ -223,6 +223,7 @@
                     <div class="flex gap-1">
                         <p-button
                             icon="pi pi-eye"
+                            *hasPermission="Permission.INVOICES_READ"
                             severity="info"
                             [text]="true"
                             size="small"
@@ -232,6 +233,7 @@
 
                         <p-button
                             icon="pi pi-pencil"
+                            *hasPermission="Permission.INVOICES_UPDATE"
                             severity="warn"
                             [text]="true"
                             size="small"
@@ -240,6 +242,7 @@
                         </p-button>
 
                         <p-button
+                            *hasPermission="Permission.INVOICES_UPDATE"
                             #menuButton
                             icon="pi pi-ellipsis-v"
                             severity="secondary"

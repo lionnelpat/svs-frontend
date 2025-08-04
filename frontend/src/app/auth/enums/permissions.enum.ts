@@ -29,18 +29,25 @@ export enum Permission {
     SHIPS_READ = 'ships.read',
     SHIPS_UPDATE = 'ships.update',
     SHIPS_DELETE = 'ships.delete',
+    SHIPS_APPROVED = 'ships.approved',
+    SHIPS_REJECTED = 'ships.rejected',
 
     // Gestion des opérations
     OPERATIONS_CREATE = 'operations.create',
     OPERATIONS_READ = 'operations.read',
     OPERATIONS_UPDATE = 'operations.update',
     OPERATIONS_DELETE = 'operations.delete',
+    OPERATIONS_APPROVED = 'operations.approved',
+    OPERATIONS_REJECTED = 'operations.rejected',
 
     // Gestion des dépenses
     EXPENSES_CREATE = 'expenses.create',
     EXPENSES_READ = 'expenses.read',
     EXPENSES_UPDATE = 'expenses.update',
     EXPENSES_DELETE = 'expenses.delete',
+    EXPENSES_APPROVED = 'expenses.approve',
+    EXPENSES_REJECTED = 'expenses.reject',
+    EXPENSES_MARK_AS_PAID = 'expenses.mars-as-paid',
 
     // Gestion des types de dépenses
     EXPENSES_CATEGORY_CREATE = 'expense-categories.create',

@@ -12,6 +12,9 @@ import { Company, CreateCompanyRequest, UpdateCompanyRequest } from '../../../..
 import { Textarea } from 'primeng/textarea';
 import { getErrorMessage } from '../../../../core/utilities/error';
 import { COMPANY_KEY } from '../../constants/constants';
+import {UserRoleService} from "../../../../auth/services/user-role.service";
+import {Permission} from "../../../../auth/enums/permissions.enum";
+import {HasPermissionDirective} from "../../../../auth/directives";
 
 @Component({
   selector: 'app-company-form',
@@ -22,7 +25,8 @@ import { COMPANY_KEY } from '../../constants/constants';
         InputTextModule,
         DropdownModule,
         DividerModule,
-        Textarea
+        Textarea,
+        HasPermissionDirective
     ],
     standalone: true,
     providers: [ConfirmationService, MessageService],
@@ -58,6 +62,7 @@ export class CompanyFormComponent implements OnInit, OnChanges {
         private readonly fb: FormBuilder,
         private readonly companyService: CompanyService,
         private readonly messageService: MessageService,
+        private readonly userRoleService: UserRoleService,
         private readonly logger: LoggerService
     ) {
         this.initForm();
@@ -115,6 +120,10 @@ export class CompanyFormComponent implements OnInit, OnChanges {
             this.isEditMode = false;
             this.companyForm.reset();
         }
+    }
+
+    get canCreateCompany(): boolean {
+        return this.userRoleService.hasPermission(Permission.COMPANIES_CREATE);
     }
 
     isFieldInvalid(fieldName: string): boolean {
@@ -196,4 +205,5 @@ export class CompanyFormComponent implements OnInit, OnChanges {
         this.company = null;
     }
 
+    protected readonly Permission = Permission;
 }

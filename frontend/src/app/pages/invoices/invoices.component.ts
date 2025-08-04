@@ -64,7 +64,7 @@ export class InvoicesComponent implements OnInit, OnDestroy {
         active: true
     };
 
-    private destroy$ = new Subject<void>();
+    private readonly destroy$ = new Subject<void>();
 
     constructor(
         private readonly invoiceService: InvoiceService,
@@ -75,6 +75,7 @@ export class InvoicesComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.loadInvoices();
+        this.loadStatistics();
     }
 
     ngOnDestroy(): void {
@@ -93,6 +94,23 @@ export class InvoicesComponent implements OnInit, OnDestroy {
                     this.totalRecords = response.total;
                     this.loading = false;
                     this.logger.info('Factures chargées', { count: response.invoices.length });
+                },
+                error: (error) => {
+                    this.loading = false;
+                    this.logger.error('Erreur lors du chargement des factures', error);
+                }
+            });
+    }
+
+    // Chargement des stats
+    private loadStatistics(): void {
+        this.loading = true;
+        this.invoiceService.getInvoiceStatistics()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: (response) => {
+                    this.statistics = response
+                    this.loading = false;
                 },
                 error: (error) => {
                     this.loading = false;
@@ -156,6 +174,7 @@ export class InvoicesComponent implements OnInit, OnDestroy {
                                 detail: 'Facture supprimée avec succès'
                             });
                             this.loadInvoices();
+                            this.loadStatistics();
                         }
                     });
             }
@@ -173,7 +192,7 @@ export class InvoicesComponent implements OnInit, OnDestroy {
                         detail: 'Statut de la facture mis à jour'
                     });
                     this.loadInvoices();
-                    // this.loadStatistics();
+                    this.loadStatistics();
 
                     // Mettre à jour la facture sélectionnée si c'est la même
                     if (this.selectedInvoice?.id === updatedInvoice.id) {

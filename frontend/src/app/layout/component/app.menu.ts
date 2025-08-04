@@ -4,7 +4,7 @@ import { RouterModule } from '@angular/router';
 import { AppMenuitem } from './app.menuitem';
 import {UserRole} from "../../auth/enums/roles.enum";
 import {Permission} from "../../auth/enums/permissions.enum";
-import {RoleService} from "../../auth/services/role.service";
+import {UserRoleService} from "../../auth/services/user-role.service";
 
 interface MenuItem {
     label: string;
@@ -31,7 +31,7 @@ interface MenuItem {
     </ul> `
 })
 export class AppMenu implements OnInit  {
-    private readonly roleService = inject(RoleService);
+    private readonly roleService = inject(UserRoleService);
 
     model: MenuItem[] = [];
 
@@ -91,17 +91,23 @@ export class AppMenu implements OnInit  {
                         minimumRole: UserRole.USER
                     },
                     {
-                        label: 'Rapports',
-                        icon: 'pi pi-fw pi-chart-bar',
-                        routerLink: '/reports/list',
-                        permissions: [Permission.REPORTS_VIEW]
+                        label: 'Méthodes de Paiement',
+                        icon: 'pi pi-fw pi-credit-card',
+                        routerLink: '/payment-methods/list',
+                        roles: [UserRole.ADMIN, UserRole.SUPER_ADMIN]
                     },
-                    {
-                        label: 'Analyses',
-                        icon: 'pi pi-fw pi-chart-line',
-                        routerLink: '/analytics/list',
-                        permissions: [Permission.ANALYTICS_VIEW]
-                    }
+                    // {
+                    //     label: 'Rapports',
+                    //     icon: 'pi pi-fw pi-chart-bar',
+                    //     routerLink: '/reports/list',
+                    //     permissions: [Permission.REPORTS_VIEW]
+                    // },
+                    // {
+                    //     label: 'Analyses',
+                    //     icon: 'pi pi-fw pi-chart-line',
+                    //     routerLink: '/analytics/list',
+                    //     permissions: [Permission.ANALYTICS_VIEW]
+                    // }
                 ]
             },
             {
@@ -118,12 +124,6 @@ export class AppMenu implements OnInit  {
                         icon: 'pi pi-fw pi-users',
                         routerLink: '/suppliers/list',
                         minimumRole: UserRole.MANAGER
-                    },
-                    {
-                        label: 'Méthodes de Paiement',
-                        icon: 'pi pi-fw pi-credit-card',
-                        routerLink: '/payment-methods/list',
-                        roles: [UserRole.ADMIN, UserRole.SUPER_ADMIN]
                     }
                 ]
             },

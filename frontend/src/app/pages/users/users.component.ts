@@ -1,7 +1,7 @@
 // src/app/pages/users/users.component.ts
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
-import { RoleService } from '../../auth/services/role.service';
+import { UserRoleService } from '../../auth/services/user-role.service';
 import { UserService } from './service/user.service';
 import { User, UserStats } from './interfaces/user.interface';
 import { UserRole} from "../../auth/enums/roles.enum";
@@ -28,7 +28,7 @@ import {UserFormComponent} from "./components/user-form/user-form.component";
     styleUrl: './users.component.scss'
 })
 export class UsersComponent implements OnInit, OnDestroy {
-    private readonly roleService = inject(RoleService);
+    private readonly roleService = inject(UserRoleService);
     private readonly userService = inject(UserService);
     private readonly destroy$ = new Subject<void>();
 

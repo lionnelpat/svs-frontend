@@ -6,14 +6,14 @@ import {
     Router,
     UrlTree
 } from '@angular/router';
-import { RoleService } from '../services/role.service';
+import { UserRoleService } from '../services/user-role.service';
 import {AuthService} from "../services/auth.service";
 
 @Injectable({
     providedIn: 'root'
 })
 export class AdminGuard implements CanActivate {
-    private readonly roleService = inject(RoleService);
+    private readonly roleService = inject(UserRoleService);
     private readonly authService = inject(AuthService);
     private readonly router = inject(Router);
 

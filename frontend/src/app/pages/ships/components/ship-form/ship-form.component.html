@@ -238,6 +238,7 @@
         ></button>
         <button
             type="submit"
+            *hasPermission="Permission.SHIPS_CREATE"
             pButton
             [label]="isEditMode ? 'Modifier' : 'Créer'"
             [icon]="isEditMode ? 'pi pi-check' : 'pi pi-plus'"

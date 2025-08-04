@@ -9,6 +9,8 @@ import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { LoggerService } from '../../core/services/logger.service';
 import { Button } from 'primeng/button';
+import {Permission} from "../../auth/enums/permissions.enum";
+import {HasPermissionDirective} from "../../auth/directives";
 
 @Component({
     selector: 'app-operations',
@@ -21,7 +23,8 @@ import { Button } from 'primeng/button';
         DialogModule,
         ToastModule,
         ConfirmDialogModule,
-        Button
+        Button,
+        HasPermissionDirective
     ],
     templateUrl: './operations.component.html',
     styleUrls: ['./operations.component.scss']
@@ -107,4 +110,6 @@ export class OperationsComponent {
     onDetailDialogHide(): void {
         this.showDetailDialog = false;
     }
+
+    protected readonly Permission = Permission;
 }

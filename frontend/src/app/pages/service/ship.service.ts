@@ -119,6 +119,18 @@ export class ShipService {
         );
     }
 
+    activeShipStatus(id: number): Observable<Ship> {
+        return this.http.patch<Ship>(`${this.apiBaseUrl}/${id}/activate`, {}).pipe(
+            catchError(err => this.handleError(err, `Changement de statut navire ID: ${id}`))
+        );
+    }
+
+    deactivateShipStatus(id: number): Observable<Ship> {
+        return this.http.patch<Ship>(`${this.apiBaseUrl}/${id}/deactivate`, {}).pipe(
+            catchError(err => this.handleError(err, `Changement de statut navire ID: ${id}`))
+        );
+    }
+
     getShipsByCompany(compagnieId: number): Observable<Ship[]> {
         return this.http.get<Ship[]>(`${this.apiBaseUrl}/by-company/${compagnieId}`).pipe(
             catchError(err => this.handleError(err, `Récupération navires de la compagnie ${compagnieId}`))

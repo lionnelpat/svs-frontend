@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
 import { RippleModule } from 'primeng/ripple';
 import { MenuItem } from 'primeng/api';
 import { LayoutService } from '../service/layout.service';
-import {RoleService} from "../../auth/services/role.service";
+import {UserRoleService} from "../../auth/services/user-role.service";
 
 @Component({
     // eslint-disable-next-line @angular-eslint/component-selector
@@ -92,7 +92,7 @@ export class AppMenuitem {
     constructor(
         public router: Router,
         private readonly layoutService: LayoutService,
-        private readonly roleService: RoleService,
+        private readonly roleService: UserRoleService,
     ) {
         this.menuSourceSubscription = this.layoutService.menuSource$.subscribe((value) => {
             Promise.resolve(null).then(() => {
