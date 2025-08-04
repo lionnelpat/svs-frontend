@@ -22,7 +22,6 @@ import {Password} from "primeng/password";
 import {Divider} from "primeng/divider";
 import {PrimeTemplate} from "primeng/api";
 import {MultiSelect} from "primeng/multiselect";
-import {Checkbox} from "primeng/checkbox";
 import {InputText} from "primeng/inputtext";
 
 interface RoleOption {
@@ -46,7 +45,6 @@ interface RoleOption {
         Divider,
         PrimeTemplate,
         MultiSelect,
-        Checkbox,
         InputText,
         ReactiveFormsModule,
         FormsModule

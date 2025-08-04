@@ -67,9 +67,7 @@ interface TableLazyLoadEvent {
         Calendar,
         ReactiveFormsModule,
         DropdownModule,
-        InputText,
-        IconField,
-        InputIcon
+        InputText
     ],
     styleUrl: './user-list.component.scss'
 })
